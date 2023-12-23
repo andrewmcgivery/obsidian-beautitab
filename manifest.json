@@ -6,5 +6,5 @@
 	"description": "Creates a customizable new tab view with beautiful backgrounds, quotes, search, and more.",
 	"author": "Andrew McGivery",
 	"authorUrl": "https://github.com/andrewmcgivery",
-	"isDesktopOnly": true
+	"isDesktopOnly": false
 }
