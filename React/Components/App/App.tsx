@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useObsidian } from "../../Context/ObsidianAppContext";
-import { getIcon } from "obsidian";
+import { TFile, getIcon } from "obsidian";
 import getTime from "React/Utils/getTime";
 import Observable from "Utils/Observable";
 import { BeautitabPluginSettings } from "main";
@@ -27,7 +27,10 @@ const Icon = ({ name }: { name: string }) => {
 
 const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 	const [time, setTime] = useState(getTime());
-	const [quote, setQuote] = useState(null);
+	const [quote, setQuote] = useState<{
+		content: string;
+		author: string;
+	} | null>(null);
 	const [settings, setSettings] = useState<BeautitabPluginSettings>(
 		settingsObservable.getValue()
 	);
@@ -89,6 +92,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 		<div
 			className="beautitab-root"
 			style={{
+				// @ts-ignore
 				"--background": `url("${background}")`,
 			}}
 		>
@@ -98,6 +102,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 						<a
 							className="beautitab-iconbutton"
 							onClick={() => {
+								// @ts-ignore
 								obsidian.commands.executeCommandById(
 									settings.topLeftSearchProvider
 								);
@@ -126,6 +131,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 							<a
 								className="beautitab-search-wrapper"
 								onClick={() => {
+									// @ts-ignore
 									obsidian.commands.executeCommandById(
 										settings.inlineSearchProvider
 									);
