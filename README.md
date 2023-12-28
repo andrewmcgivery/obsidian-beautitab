@@ -40,7 +40,7 @@ When the search box in the middle of the screen is clicked, this button opens a 
 The inline search can be shown/hidden via settings. Additionally, the behaviour of what occurs when the button is clicked can be configured to open either Quick Switcher or Omnisearch.
 
 > [!TIP]
-> Another plugin you'd like to see as a provider? Open an issue!
+> Another plugin you'd like to see as a provider? Open a discussion!
 
 ### Recent files
 
@@ -63,7 +63,7 @@ A random background is displayed on the Beautitab screen. This background will r
 This specia theme will show diferent images depending on the time of the year. For example, will show fireworks on news years, pumpkins in the fall, and holiday images in December.
 
 > [!TIP]
-> If there is a theme you feel we should celebrate in the Seasons and holidays theme, open an issue!
+> If there is a theme you feel we should celebrate in the Seasons and holidays theme, open a discussion!
 
 #### Custom
 
