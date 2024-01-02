@@ -152,23 +152,28 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 					</div>
 					{settings.showRecentFiles && (
 						<div className="beautitab-recentlyedited">
-							{latestModifiedMarkdownFiles.map((file) => (
-								<a
-									key={file.path}
-									className="beautitab-recentlyedited-file"
-									data-path={file.path}
-									onClick={() => {
-										const leaf =
-											obsidian?.workspace.getMostRecentLeaf();
-										leaf?.openFile(file);
-									}}
-								>
-									<Icon name="file" />
-									<span className="beautitab-recentlyedited-file-name">
-										{file.basename}
-									</span>
-								</a>
-							))}
+							{latestModifiedMarkdownFiles?.map(
+								(file) =>
+									file instanceof TFile && (
+										<a
+											key={file.path}
+											className="beautitab-recentlyedited-file"
+											data-path={file.path}
+											onClick={() => {
+												const leaf =
+													obsidian?.workspace.getMostRecentLeaf();
+												if (file instanceof TFile) {
+													leaf?.openFile(file);
+												}
+											}}
+										>
+											<Icon name="file" />
+											<span className="beautitab-recentlyedited-file-name">
+												{file.basename}
+											</span>
+										</a>
+									)
+							)}
 						</div>
 					)}
 				</div>
