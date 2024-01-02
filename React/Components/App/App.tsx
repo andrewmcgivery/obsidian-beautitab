@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useObsidian } from "../../Context/ObsidianAppContext";
-import { TFile, getIcon, requestUrl } from "obsidian";
+import { TFile, getIcon } from "obsidian";
 import getTime from "React/Utils/getTime";
 import Observable from "Utils/Observable";
 import { BeautitabPluginSettings } from "main";
@@ -40,11 +40,17 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 		settings.customBackground
 	);
 
-	const allVaultFiles = obsidian?.vault.getAllLoadedFiles() as TFile[];
+	const allVaultFiles = obsidian?.vault.getAllLoadedFiles();
 	const latestModifiedMarkdownFiles = useMemo(() => {
-		const files = allVaultFiles?.filter((file) => file.extension === "md");
-		files.sort((a, b) => b.stat.mtime - a.stat.mtime);
-		return files.slice(0, 5);
+		const files = allVaultFiles?.filter(
+			(file) => file instanceof TFile && file.extension === "md"
+		);
+		files?.sort((a, b) =>
+			a instanceof TFile && b instanceof TFile
+				? b.stat.mtime - a.stat.mtime
+				: 0
+		);
+		return files?.slice(0, 5);
 	}, [allVaultFiles]);
 
 	/**
@@ -65,9 +71,9 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 	 * Get a random quote
 	 */
 	useEffect(() => {
-		requestUrl("https://api.quotable.io/random").then(async (res) => {
+		fetch("https://api.quotable.io/random").then(async (res) => {
 			if (res.status === 200) {
-				const response = await res.json;
+				const response = await res.json();
 				setQuote(response);
 			}
 		});
