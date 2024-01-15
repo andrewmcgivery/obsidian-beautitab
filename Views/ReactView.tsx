@@ -1,4 +1,4 @@
-import { App, ItemView, WorkspaceLeaf } from "obsidian";
+import { App, FileView, WorkspaceLeaf } from "obsidian";
 import { Root, createRoot } from "react-dom/client";
 import ReactApp from "../React/Components/App/App";
 import { ObsidianContext } from "../React/Context/ObsidianAppContext";
@@ -6,7 +6,7 @@ import Observable from "Utils/Observable";
 
 export const BEAUTITAB_REACT_VIEW = "beautitab-react-view";
 
-export class ReactView extends ItemView {
+export class ReactView extends FileView {
 	root: Root | null = null;
 	app: App;
 	settingsObservable: Observable;
@@ -15,6 +15,7 @@ export class ReactView extends ItemView {
 		super(leaf);
 		this.app = app;
 		this.settingsObservable = settingsObservable;
+		this.allowNoFile = true;
 	}
 
 	getViewType() {
@@ -30,7 +31,7 @@ export class ReactView extends ItemView {
 	}
 
 	async onOpen() {
-		this.root = createRoot(this.containerEl.children[1]);
+		this.root = createRoot(this.contentEl);
 		this.root.render(
 			<ObsidianContext.Provider value={this.app}>
 				<ReactApp settingsObservable={this.settingsObservable} />

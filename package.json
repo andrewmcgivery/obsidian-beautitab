@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-beautitab",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A plugin for Obsidian.MD that creates a customizable new tab view with beautiful backgrounds, quotes, search, and more.",
 	"main": "dist/main.js",
 	"scripts": {
