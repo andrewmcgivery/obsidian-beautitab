@@ -6,7 +6,7 @@ import capitalizeFirstLetter from "Utils/capitalizeFirstLetter";
 export enum SearchProvider {
 	SWITCHER = "switcher:open",
 	OMNISEARCH = "omnisearch:show-modal",
-	QUICKSWITCHER_PLUS = "darlal-switcher-plus:switcher-plus:open", //open in standard mode
+	QUICKSWITCHER_PLUS = "darlal-switcher-plus:switcher-plus:open", // Open in standard mode
 	ANOTHER_QUICKSWITCHER = "obsidian-another-quick-switcher:search-command_file-name-search"
 }
 
