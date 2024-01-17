@@ -6,6 +6,8 @@ import capitalizeFirstLetter from "Utils/capitalizeFirstLetter";
 export enum SearchProvider {
 	SWITCHER = "switcher:open",
 	OMNISEARCH = "omnisearch:show-modal",
+	QUICKSWITCHER_PLUS ="switcher-plus:open", //open in standard mode
+	ANOTHER_QUICKSWITCHER = "obsidian-another-quick-switcher:search-command_file-name-search"
 }
 
 export enum BackgroundTheme {
@@ -29,6 +31,14 @@ const SearchProviders = [
 	{
 		display: "Omnisearch",
 		value: SearchProvider.OMNISEARCH,
+	},
+	{
+		display: "Quick Switcher Plus (standard mode)",
+		value: SearchProvider.QUICKSWITCHER_PLUS,
+	},
+	{
+		display: "Another Quick Switcher (file name search)",
+		value: SearchProvider.ANOTHER_QUICKSWITCHER,
 	},
 ];
 
@@ -133,10 +143,33 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
+	/**
+	 * Filter SearchProvider based on what plugins are installed
+	 */
+	getSearchProvider() {
+		const app = this.plugin.app;
+		//@ts-ignore
+		const plugins = app.plugins.enabledPlugins as Set<string>;
+
+		const searchProviders = SearchProviders.filter((provider) => {
+			return plugins.has(provider.value.split(":")[0]);
+		});
+		//include default provider, Obsidian core
+		searchProviders.push(
+			{
+				display: "Quick Switcher",
+				value: SearchProvider.SWITCHER,
+			},
+		);
+
+		return searchProviders;
+	}
+
 	display(): void {
 		const { containerEl } = this;
 
 		containerEl.empty();
+		const searchProviders = this.getSearchProvider();
 
 		new Setting(containerEl)
 			.setName("Background theme")
@@ -200,7 +233,7 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 				`Which plugin should be utilized for search when clicking the top left button?`
 			)
 			.addDropdown((component) => {
-				SearchProviders.forEach((provider) => {
+				searchProviders.forEach((provider) => {
 					component.addOption(provider.value, provider.display);
 				});
 
@@ -283,7 +316,7 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 				`Which plugin should be utilized for search when clicking the middle of the screen button?`
 			)
 			.addDropdown((component) => {
-				SearchProviders.forEach((provider) => {
+				searchProviders.forEach((provider) => {
 					component.addOption(provider.value, provider.display);
 				});
 
