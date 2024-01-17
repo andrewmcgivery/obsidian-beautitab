@@ -3,7 +3,7 @@ import { useObsidian } from "../../Context/ObsidianAppContext";
 import { TFile, getIcon } from "obsidian";
 import getTime from "React/Utils/getTime";
 import Observable from "Utils/Observable";
-import { BeautitabPluginSettings } from "main";
+import BeautitabPlugin, { BeautitabPluginSettings } from "main";
 import getBackground from "React/Utils/getBackground";
 
 /**
@@ -34,11 +34,14 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 	const [settings, setSettings] = useState<BeautitabPluginSettings>(
 		settingsObservable.getValue()
 	);
+
 	const obsidian = useObsidian();
 	const background = getBackground(
 		settings.backgroundTheme,
 		settings.customBackground
 	);
+	//@ts-ignore
+	const plugin = obsidian?.plugins.getPlugin("beautitab") as BeautitabPlugin; // i don't think it's a good way to get the plugin instance like that, but i don't know how to do it otherwise
 
 	const allVaultFiles = obsidian?.vault.getAllLoadedFiles();
 	const latestModifiedMarkdownFiles = useMemo(() => {
@@ -108,8 +111,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 						<a
 							className="beautitab-iconbutton"
 							onClick={() => {
-								// @ts-ignore
-								obsidian.commands.executeCommandById(
+								plugin.openSwitcherCommand(
 									settings.topLeftSearchProvider
 								);
 							}}
@@ -137,8 +139,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 							<a
 								className="beautitab-search-wrapper"
 								onClick={() => {
-									// @ts-ignore
-									obsidian.commands.executeCommandById(
+									plugin.openSwitcherCommand(
 										settings.inlineSearchProvider
 									);
 								}}
