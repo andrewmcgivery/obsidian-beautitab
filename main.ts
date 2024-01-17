@@ -6,7 +6,7 @@ import capitalizeFirstLetter from "Utils/capitalizeFirstLetter";
 export enum SearchProvider {
 	SWITCHER = "switcher:open",
 	OMNISEARCH = "omnisearch:show-modal",
-	QUICKSWITCHER_PLUS ="switcher-plus:open", //open in standard mode
+	QUICKSWITCHER_PLUS = "darlal-switcher-plus:switcher-plus:open", //open in standard mode
 	ANOTHER_QUICKSWITCHER = "obsidian-another-quick-switcher:search-command_file-name-search"
 }
 
@@ -33,7 +33,7 @@ const SearchProviders = [
 		value: SearchProvider.OMNISEARCH,
 	},
 	{
-		display: "Quick Switcher Plus (standard mode)",
+		display: "Quick Switcher++ (standard mode)",
 		value: SearchProvider.QUICKSWITCHER_PLUS,
 	},
 	{
@@ -131,6 +131,21 @@ export default class BeautitabPlugin extends Plugin {
 			leaf.setViewState({
 				type: BEAUTITAB_REACT_VIEW,
 			});
+		}
+	}
+
+	openSwitcherCommand(command: string) {
+		const pluginID = command.split(":")[0];
+		//@ts-ignore
+		const enabledPlugins = this.app.plugins.enabledPlugins as Set<string>;
+		if (enabledPlugins.has(pluginID)) {
+			//@ts-ignore
+			this.app.commands.executeCommandById(command);
+		} else {
+			//@ts-ignore
+			this.app.commands.executeCommandById(
+				SearchProvider.SWITCHER
+			);
 		}
 	}
 }
