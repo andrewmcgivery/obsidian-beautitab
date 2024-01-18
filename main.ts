@@ -39,7 +39,6 @@ export interface BeautitabPluginSettings {
 	inlineSearchProvider: SearchProvider;
 	showRecentFiles: boolean;
 	showQuote: boolean;
-	searchProviders: string[]; // Will be a list of plugin IDs, manually set by the user in data.json
 }
 
 const DEFAULT_SETTINGS: BeautitabPluginSettings = {
@@ -54,13 +53,14 @@ const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	inlineSearchProvider: DEFAULT_SEARCH_PROVIDER,
 	showRecentFiles: true,
 	showQuote: true,
-	searchProviders: [
+};
+
+const SEARCH_PROVIDER = [
 		"switcher",
 		"omnisearch",
 		"darlal-switcher-plus",
 		"obsidian-another-quick-switcher",
-	],
-};
+	]
 
 /**
  * This allows a "live-reload" of Obsidian when developing the plugin.
@@ -220,12 +220,12 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 			.setClass("search-provider")
 			.addText((component) => {
 				component.setValue(
-					this.plugin.settings.topLeftSearchProvider.display ?? DEFAULT_SEARCH_PROVIDER.display
+					this.plugin.settings.topLeftSearchProvider.display
 				);
 				component.setDisabled(true);
 			})
-			.addExtraButton((component) => {
-				component.setIcon("search");
+			.addButton((component) => {
+				component.setButtonText("Change");
 				component.setTooltip("Choose search provider");
 				component.onClick(() => {
 					new ChooseSearchProvider(
@@ -314,11 +314,11 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 
 			.addText((component) => {
 				component
-					.setValue(this.plugin.settings.inlineSearchProvider.display ?? DEFAULT_SEARCH_PROVIDER.display)
+					.setValue(this.plugin.settings.inlineSearchProvider.display)
 					.setDisabled(true)
 			})
-			.addExtraButton((component) => {
-				component.setIcon("search");
+			.addButton((component) => {
+				component.setButtonText("Change")
 				component.setTooltip("Choose search provider");
 				component.onClick(() => {
 					new ChooseSearchProvider(
@@ -388,7 +388,7 @@ class ChooseSearchProvider extends FuzzySuggestModal<SearchProvider> {
 
 	getItems(): SearchProvider[] {
 		//@ts-ignore
-		const allCommands = Object.entries(this.app.commands.commands).filter(pluginId => this.settings.searchProviders.includes(pluginId[0].split(":")[0]));
+		const allCommands = Object.entries(this.app.commands.commands).filter(pluginId => SEARCH_PROVIDER.includes(pluginId[0].split(":")[0]));
 		const searchProviders: SearchProvider[] = [];
 		allCommands.forEach((command) => {
 			searchProviders.push({
