@@ -1,1 +1,9 @@
 @use "React/Components/App/App";
+.setting-item.search-provider .setting-item-control input {
+	width: 100%;
+	border: none;
+	background: none;
+	outline: none;
+	box-shadow: none;
+	text-align: right;
+}
