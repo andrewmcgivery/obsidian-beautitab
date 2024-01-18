@@ -393,7 +393,6 @@ class ChooseSearchProvider extends FuzzySuggestModal<SearchProvider> {
 		allCommands.forEach((command) => {
 			searchProviders.push({
 				command: command[0],
-				//eslint-disable-next-line @typescript-eslint/no-explicit-any
 				display: (command[1] as any).name,
 			});
 		});
