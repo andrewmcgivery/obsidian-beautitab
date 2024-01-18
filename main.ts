@@ -1,4 +1,4 @@
-import { App, FuzzySuggestModal, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { App, FuzzySuggestModal, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "Utils/Observable";
 import capitalizeFirstLetter from "Utils/capitalizeFirstLetter";
@@ -127,7 +127,12 @@ export default class BeautitabPlugin extends Plugin {
 		}
 	}
 
-	openSwitcherCommand(command: string) {
+	/**
+	 * Check if the choosen provider is enabled
+	 * If yes: open it by using executeCommandById
+	 * If no: Notice the user and tell them to enable it in the settings
+	 */
+	openSwitcherCommand(command: string):void {
 		const pluginID = command.split(":")[0];
 		//@ts-ignore
 		const enabledPlugins = this.app.plugins.enabledPlugins as Set<string>;
@@ -135,10 +140,7 @@ export default class BeautitabPlugin extends Plugin {
 			//@ts-ignore
 			this.app.commands.executeCommandById(command);
 		} else {
-			//@ts-ignore
-			this.app.commands.executeCommandById(
-				DEFAULT_SEARCH_PROVIDER.command
-			);
+			new Notice(`Plugin ${pluginID} is not enabled. Please enable it in the settings.`);
 		}
 	}
 }
@@ -369,7 +371,11 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 			});
 	}
 }
-
+/**
+ * This class is used to create a modal to choose a search provider from a list of available search providers
+ * Available search providers are defined in SEARCH_PROVIDER
+ * Used in BeautitabPluginSettingTab
+ */
 class ChooseSearchProvider extends FuzzySuggestModal<SearchProvider> {
 	settings: BeautitabPluginSettings;
 	onSubmit: (result: SearchProvider) => void;
