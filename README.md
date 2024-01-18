@@ -96,3 +96,7 @@ If you run into any issues with this plugin, please open an issue and incude as 
 -   Images are pulled from http://www.unsplash.com
 -   Quotes are pulled from the quoteable API: https://github.com/lukePeavey/quotable
 -   Inspired by the excellent Chrome extension Momentum: https://momentumdash.com/
+
+# Leave a Tip
+
+<a href="https://www.buymeacoffee.com/andrewmcgivery" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
