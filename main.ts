@@ -1,14 +1,8 @@
-import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { App, FuzzySuggestModal, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "Utils/Observable";
 import capitalizeFirstLetter from "Utils/capitalizeFirstLetter";
 
-export enum SearchProvider {
-	SWITCHER = "switcher:open",
-	OMNISEARCH = "omnisearch:show-modal",
-	QUICKSWITCHER_PLUS = "darlal-switcher-plus:switcher-plus:open", // Open in standard mode
-	ANOTHER_QUICKSWITCHER = "obsidian-another-quick-switcher:search-command_file-name-search"
-}
 
 export enum BackgroundTheme {
 	SEASONS_AND_HOLIDAYS = "seasons and holidays",
@@ -23,24 +17,15 @@ export enum BackgroundTheme {
 	CUSTOM = "custom",
 }
 
-const SearchProviders = [
-	{
-		display: "Quick Switcher",
-		value: SearchProvider.SWITCHER,
-	},
-	{
-		display: "Omnisearch",
-		value: SearchProvider.OMNISEARCH,
-	},
-	{
-		display: "Quick Switcher++ (standard mode)",
-		value: SearchProvider.QUICKSWITCHER_PLUS,
-	},
-	{
-		display: "Another Quick Switcher (file name search)",
-		value: SearchProvider.ANOTHER_QUICKSWITCHER,
-	},
-];
+interface SearchProvider {
+	command: string;
+	display: string;
+}
+
+const DEFAULT_SEARCH_PROVIDER: SearchProvider = {
+	command: "switcher:open",
+	display: "Obsidian Core Quick Switcher",
+};
 
 export interface BeautitabPluginSettings {
 	backgroundTheme: BackgroundTheme;
@@ -54,20 +39,27 @@ export interface BeautitabPluginSettings {
 	inlineSearchProvider: SearchProvider;
 	showRecentFiles: boolean;
 	showQuote: boolean;
+	searchProviders: string[]; // Will be a list of plugin IDs, manually set by the user in data.json
 }
 
 const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	backgroundTheme: BackgroundTheme.SEASONS_AND_HOLIDAYS,
 	customBackground: "",
 	showTopLeftSearchButton: true,
-	topLeftSearchProvider: SearchProvider.SWITCHER,
+	topLeftSearchProvider: DEFAULT_SEARCH_PROVIDER,
 	showTime: true,
 	showGreeting: true,
 	greetingText: "Hello, Beautiful.",
 	showInlineSearch: true,
-	inlineSearchProvider: SearchProvider.SWITCHER,
+	inlineSearchProvider: DEFAULT_SEARCH_PROVIDER,
 	showRecentFiles: true,
 	showQuote: true,
+	searchProviders: [
+		"switcher",
+		"omnisearch",
+		"darlal-switcher-plus",
+		"obsidian-another-quick-switcher",
+	],
 };
 
 /**
@@ -81,6 +73,7 @@ if (process.env.NODE_ENV === "development") {
 	);
 }
 
+
 export default class BeautitabPlugin extends Plugin {
 	settings: BeautitabPluginSettings;
 	settingsObservable: Observable;
@@ -92,7 +85,7 @@ export default class BeautitabPlugin extends Plugin {
 
 		this.registerView(
 			BEAUTITAB_REACT_VIEW,
-			(leaf) => new ReactView(this.app, this.settingsObservable, leaf)
+			(leaf) => new ReactView(this.app, this.settingsObservable, leaf, this)
 		);
 
 		this.addSettingTab(new BeautitabPluginSettingTab(this.app, this));
@@ -144,7 +137,7 @@ export default class BeautitabPlugin extends Plugin {
 		} else {
 			//@ts-ignore
 			this.app.commands.executeCommandById(
-				SearchProvider.SWITCHER
+				DEFAULT_SEARCH_PROVIDER.command
 			);
 		}
 	}
@@ -158,33 +151,10 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
-	/**
-	 * Filter SearchProvider based on what plugins are installed
-	 */
-	getSearchProvider() {
-		const app = this.plugin.app;
-		//@ts-ignore
-		const plugins = app.plugins.enabledPlugins as Set<string>;
-
-		const searchProviders = SearchProviders.filter((provider) => {
-			return plugins.has(provider.value.split(":")[0]);
-		});
-		//include default provider, Obsidian core
-		searchProviders.push(
-			{
-				display: "Quick Switcher",
-				value: SearchProvider.SWITCHER,
-			},
-		);
-
-		return searchProviders;
-	}
-
 	display(): void {
 		const { containerEl } = this;
 
 		containerEl.empty();
-		const searchProviders = this.getSearchProvider();
 
 		new Setting(containerEl)
 			.setName("Background theme")
@@ -247,19 +217,29 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 			.setDesc(
 				`Which plugin should be utilized for search when clicking the top left button?`
 			)
-			.addDropdown((component) => {
-				searchProviders.forEach((provider) => {
-					component.addOption(provider.value, provider.display);
-				});
-
-				component.setValue(this.plugin.settings.topLeftSearchProvider);
-
-				component.onChange((value: SearchProvider) => {
-					this.plugin.settings.topLeftSearchProvider = value;
-					this.plugin.settingsObservable.setValue(
-						this.plugin.settings
-					);
-					this.plugin.saveSettings();
+			.setClass("search-provider")
+			.addText((component) => {
+				component.setValue(
+					this.plugin.settings.topLeftSearchProvider.display ?? DEFAULT_SEARCH_PROVIDER.display
+				);
+				component.setDisabled(true);
+			})
+			.addExtraButton((component) => {
+				component.setIcon("search");
+				component.setTooltip("Choose search provider");
+				component.onClick(() => {
+					new ChooseSearchProvider(
+						this.app,
+						this.plugin.settings,
+						(result) => {
+							this.plugin.settings.topLeftSearchProvider = result;
+							this.plugin.settingsObservable.setValue(
+								this.plugin.settings
+							);
+							this.plugin.saveSettings();
+							this.display();
+						}
+					).open();
 				});
 			});
 
@@ -330,19 +310,29 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 			.setDesc(
 				`Which plugin should be utilized for search when clicking the middle of the screen button?`
 			)
-			.addDropdown((component) => {
-				searchProviders.forEach((provider) => {
-					component.addOption(provider.value, provider.display);
-				});
+			.setClass("search-provider")
 
-				component.setValue(this.plugin.settings.inlineSearchProvider);
-
-				component.onChange((value: SearchProvider) => {
-					this.plugin.settings.inlineSearchProvider = value;
-					this.plugin.settingsObservable.setValue(
-						this.plugin.settings
-					);
-					this.plugin.saveSettings();
+			.addText((component) => {
+				component
+					.setValue(this.plugin.settings.inlineSearchProvider.display ?? DEFAULT_SEARCH_PROVIDER.display)
+					.setDisabled(true)
+			})
+			.addExtraButton((component) => {
+				component.setIcon("search");
+				component.setTooltip("Choose search provider");
+				component.onClick(() => {
+					new ChooseSearchProvider(
+						this.app,
+						this.plugin.settings,
+						(result) => {
+							this.plugin.settings.inlineSearchProvider = result;
+							this.plugin.settingsObservable.setValue(
+								this.plugin.settings
+							);
+							this.plugin.saveSettings();
+							this.display();
+						}
+					).open();
 				});
 			});
 
@@ -378,4 +368,46 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 				});
 			});
 	}
+}
+
+class ChooseSearchProvider extends FuzzySuggestModal<SearchProvider> {
+	settings: BeautitabPluginSettings;
+	onSubmit: (result: SearchProvider) => void;
+	result: SearchProvider;
+
+	constructor(
+		app: App,
+		settings: BeautitabPluginSettings,
+		onSubmit: (result: SearchProvider) => void
+	) {
+		super(app);
+		this.settings = settings;
+		this.onSubmit = onSubmit;
+
+	}
+
+	getItems(): SearchProvider[] {
+		//@ts-ignore
+		const allCommands = Object.entries(this.app.commands.commands).filter(pluginId => this.settings.searchProviders.includes(pluginId[0].split(":")[0]));
+		const searchProviders: SearchProvider[] = [];
+		allCommands.forEach((command) => {
+			searchProviders.push({
+				command: command[0],
+				//eslint-disable-next-line @typescript-eslint/no-explicit-any
+				display: (command[1] as any).name,
+			});
+		});
+		return searchProviders;
+	}
+
+	getItemText(item: SearchProvider): string {
+		return item.display;
+	}
+
+	onChooseItem(item: SearchProvider, evt: MouseEvent | KeyboardEvent): void {
+		this.result = item;
+		this.onSubmit(item);
+		this.close();
+	}
+
 }

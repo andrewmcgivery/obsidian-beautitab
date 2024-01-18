@@ -25,7 +25,7 @@ const Icon = ({ name }: { name: string }) => {
 	);
 };
 
-const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
+const App = ({ settingsObservable, plugin }: { settingsObservable: Observable, plugin: BeautitabPlugin }) => {
 	const [time, setTime] = useState(getTime());
 	const [quote, setQuote] = useState<{
 		content: string;
@@ -40,8 +40,6 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 		settings.backgroundTheme,
 		settings.customBackground
 	);
-	//@ts-ignore
-	const plugin = obsidian?.plugins.getPlugin("beautitab") as BeautitabPlugin; // i don't think it's a good way to get the plugin instance like that, but i don't know how to do it otherwise
 
 	const allVaultFiles = obsidian?.vault.getAllLoadedFiles();
 	const latestModifiedMarkdownFiles = useMemo(() => {
@@ -112,7 +110,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 							className="beautitab-iconbutton"
 							onClick={() => {
 								plugin.openSwitcherCommand(
-									settings.topLeftSearchProvider
+									settings.topLeftSearchProvider.command
 								);
 							}}
 						>
@@ -140,7 +138,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 								className="beautitab-search-wrapper"
 								onClick={() => {
 									plugin.openSwitcherCommand(
-										settings.inlineSearchProvider
+										settings.inlineSearchProvider.command
 									);
 								}}
 							>
