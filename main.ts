@@ -1,12 +1,8 @@
-import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { App, FuzzySuggestModal, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "Utils/Observable";
 import capitalizeFirstLetter from "Utils/capitalizeFirstLetter";
 
-export enum SearchProvider {
-	SWITCHER = "switcher:open",
-	OMNISEARCH = "omnisearch:show-modal",
-}
 
 export enum BackgroundTheme {
 	SEASONS_AND_HOLIDAYS = "seasons and holidays",
@@ -21,16 +17,15 @@ export enum BackgroundTheme {
 	CUSTOM = "custom",
 }
 
-const SearchProviders = [
-	{
-		display: "Quick Switcher",
-		value: SearchProvider.SWITCHER,
-	},
-	{
-		display: "Omnisearch",
-		value: SearchProvider.OMNISEARCH,
-	},
-];
+interface SearchProvider {
+	command: string;
+	display: string;
+}
+
+const DEFAULT_SEARCH_PROVIDER: SearchProvider = {
+	command: "switcher:open",
+	display: "Obsidian Core Quick Switcher",
+};
 
 export interface BeautitabPluginSettings {
 	backgroundTheme: BackgroundTheme;
@@ -50,15 +45,22 @@ const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	backgroundTheme: BackgroundTheme.SEASONS_AND_HOLIDAYS,
 	customBackground: "",
 	showTopLeftSearchButton: true,
-	topLeftSearchProvider: SearchProvider.SWITCHER,
+	topLeftSearchProvider: DEFAULT_SEARCH_PROVIDER,
 	showTime: true,
 	showGreeting: true,
 	greetingText: "Hello, Beautiful.",
 	showInlineSearch: true,
-	inlineSearchProvider: SearchProvider.SWITCHER,
+	inlineSearchProvider: DEFAULT_SEARCH_PROVIDER,
 	showRecentFiles: true,
 	showQuote: true,
 };
+
+const SEARCH_PROVIDER = [
+		"switcher",
+		"omnisearch",
+		"darlal-switcher-plus",
+		"obsidian-another-quick-switcher",
+	]
 
 /**
  * This allows a "live-reload" of Obsidian when developing the plugin.
@@ -71,6 +73,7 @@ if (process.env.NODE_ENV === "development") {
 	);
 }
 
+
 export default class BeautitabPlugin extends Plugin {
 	settings: BeautitabPluginSettings;
 	settingsObservable: Observable;
@@ -82,7 +85,7 @@ export default class BeautitabPlugin extends Plugin {
 
 		this.registerView(
 			BEAUTITAB_REACT_VIEW,
-			(leaf) => new ReactView(this.app, this.settingsObservable, leaf)
+			(leaf) => new ReactView(this.app, this.settingsObservable, leaf, this)
 		);
 
 		this.addSettingTab(new BeautitabPluginSettingTab(this.app, this));
@@ -121,6 +124,23 @@ export default class BeautitabPlugin extends Plugin {
 			leaf.setViewState({
 				type: BEAUTITAB_REACT_VIEW,
 			});
+		}
+	}
+
+	/**
+	 * Check if the choosen provider is enabled
+	 * If yes: open it by using executeCommandById
+	 * If no: Notice the user and tell them to enable it in the settings
+	 */
+	openSwitcherCommand(command: string):void {
+		const pluginID = command.split(":")[0];
+		//@ts-ignore
+		const enabledPlugins = this.app.plugins.enabledPlugins as Set<string>;
+		if (enabledPlugins.has(pluginID)) {
+			//@ts-ignore
+			this.app.commands.executeCommandById(command);
+		} else {
+			new Notice(`Plugin ${pluginID} is not enabled. Please enable it in the settings.`);
 		}
 	}
 }
@@ -199,19 +219,29 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 			.setDesc(
 				`Which plugin should be utilized for search when clicking the top left button?`
 			)
-			.addDropdown((component) => {
-				SearchProviders.forEach((provider) => {
-					component.addOption(provider.value, provider.display);
-				});
-
-				component.setValue(this.plugin.settings.topLeftSearchProvider);
-
-				component.onChange((value: SearchProvider) => {
-					this.plugin.settings.topLeftSearchProvider = value;
-					this.plugin.settingsObservable.setValue(
-						this.plugin.settings
-					);
-					this.plugin.saveSettings();
+			.setClass("search-provider")
+			.addText((component) => {
+				component.setValue(
+					this.plugin.settings.topLeftSearchProvider.display
+				);
+				component.setDisabled(true);
+			})
+			.addButton((component) => {
+				component.setButtonText("Change");
+				component.setTooltip("Choose search provider");
+				component.onClick(() => {
+					new ChooseSearchProvider(
+						this.app,
+						this.plugin.settings,
+						(result) => {
+							this.plugin.settings.topLeftSearchProvider = result;
+							this.plugin.settingsObservable.setValue(
+								this.plugin.settings
+							);
+							this.plugin.saveSettings();
+							this.display();
+						}
+					).open();
 				});
 			});
 
@@ -282,19 +312,29 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 			.setDesc(
 				`Which plugin should be utilized for search when clicking the middle of the screen button?`
 			)
-			.addDropdown((component) => {
-				SearchProviders.forEach((provider) => {
-					component.addOption(provider.value, provider.display);
-				});
+			.setClass("search-provider")
 
-				component.setValue(this.plugin.settings.inlineSearchProvider);
-
-				component.onChange((value: SearchProvider) => {
-					this.plugin.settings.inlineSearchProvider = value;
-					this.plugin.settingsObservable.setValue(
-						this.plugin.settings
-					);
-					this.plugin.saveSettings();
+			.addText((component) => {
+				component
+					.setValue(this.plugin.settings.inlineSearchProvider.display)
+					.setDisabled(true)
+			})
+			.addButton((component) => {
+				component.setButtonText("Change")
+				component.setTooltip("Choose search provider");
+				component.onClick(() => {
+					new ChooseSearchProvider(
+						this.app,
+						this.plugin.settings,
+						(result) => {
+							this.plugin.settings.inlineSearchProvider = result;
+							this.plugin.settingsObservable.setValue(
+								this.plugin.settings
+							);
+							this.plugin.saveSettings();
+							this.display();
+						}
+					).open();
 				});
 			});
 
@@ -330,4 +370,49 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 				});
 			});
 	}
+}
+/**
+ * This class is used to create a modal to choose a search provider from a list of available search providers
+ * Available search providers are defined in SEARCH_PROVIDER
+ * Used in BeautitabPluginSettingTab
+ */
+class ChooseSearchProvider extends FuzzySuggestModal<SearchProvider> {
+	settings: BeautitabPluginSettings;
+	onSubmit: (result: SearchProvider) => void;
+	result: SearchProvider;
+
+	constructor(
+		app: App,
+		settings: BeautitabPluginSettings,
+		onSubmit: (result: SearchProvider) => void
+	) {
+		super(app);
+		this.settings = settings;
+		this.onSubmit = onSubmit;
+
+	}
+
+	getItems(): SearchProvider[] {
+		//@ts-ignore
+		const allCommands = Object.entries(this.app.commands.commands).filter(pluginId => SEARCH_PROVIDER.includes(pluginId[0].split(":")[0]));
+		const searchProviders: SearchProvider[] = [];
+		allCommands.forEach((command) => {
+			searchProviders.push({
+				command: command[0],
+				display: (command[1] as any).name,
+			});
+		});
+		return searchProviders;
+	}
+
+	getItemText(item: SearchProvider): string {
+		return item.display;
+	}
+
+	onChooseItem(item: SearchProvider, evt: MouseEvent | KeyboardEvent): void {
+		this.result = item;
+		this.onSubmit(item);
+		this.close();
+	}
+
 }

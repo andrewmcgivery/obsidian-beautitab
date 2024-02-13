@@ -3,7 +3,7 @@ import { useObsidian } from "../../Context/ObsidianAppContext";
 import { TFile, getIcon, requestUrl } from "obsidian";
 import getTime from "React/Utils/getTime";
 import Observable from "Utils/Observable";
-import { BeautitabPluginSettings } from "main";
+import BeautitabPlugin, { BeautitabPluginSettings } from "main";
 import getBackground from "React/Utils/getBackground";
 
 /**
@@ -25,7 +25,7 @@ const Icon = ({ name }: { name: string }) => {
 	);
 };
 
-const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
+const App = ({ settingsObservable, plugin }: { settingsObservable: Observable, plugin: BeautitabPlugin }) => {
 	const [time, setTime] = useState(getTime());
 	const [quote, setQuote] = useState<{
 		content: string;
@@ -34,6 +34,7 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 	const [settings, setSettings] = useState<BeautitabPluginSettings>(
 		settingsObservable.getValue()
 	);
+
 	const obsidian = useObsidian();
 	const background = getBackground(
 		settings.backgroundTheme,
@@ -108,9 +109,8 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 						<a
 							className="beautitab-iconbutton"
 							onClick={() => {
-								// @ts-ignore
-								obsidian.commands.executeCommandById(
-									settings.topLeftSearchProvider
+								plugin.openSwitcherCommand(
+									settings.topLeftSearchProvider.command
 								);
 							}}
 						>
@@ -137,9 +137,8 @@ const App = ({ settingsObservable }: { settingsObservable: Observable }) => {
 							<a
 								className="beautitab-search-wrapper"
 								onClick={() => {
-									// @ts-ignore
-									obsidian.commands.executeCommandById(
-										settings.inlineSearchProvider
+									plugin.openSwitcherCommand(
+										settings.inlineSearchProvider.command
 									);
 								}}
 							>
