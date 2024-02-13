@@ -6,7 +6,7 @@ A plugin for Obsidian.MD that creates a customizable new tab view with beautiful
 
 ## How to install
 
-Plugin will be added to official repository shortly.
+Plugin can be installed via the [official community plugins](https://obsidian.md/plugins?id=beautitab).
 
 ## Features and customizations
 
