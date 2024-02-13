@@ -1,8 +1,14 @@
-import { App, FuzzySuggestModal, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
+import {
+	App,
+	FuzzySuggestModal,
+	Notice,
+	Plugin,
+	PluginSettingTab,
+	Setting,
+} from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "Utils/Observable";
 import capitalizeFirstLetter from "Utils/capitalizeFirstLetter";
-
 
 export enum BackgroundTheme {
 	SEASONS_AND_HOLIDAYS = "seasons and holidays",
@@ -56,11 +62,11 @@ const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 };
 
 const SEARCH_PROVIDER = [
-		"switcher",
-		"omnisearch",
-		"darlal-switcher-plus",
-		"obsidian-another-quick-switcher",
-	]
+	"switcher",
+	"omnisearch",
+	"darlal-switcher-plus",
+	"obsidian-another-quick-switcher",
+];
 
 /**
  * This allows a "live-reload" of Obsidian when developing the plugin.
@@ -73,7 +79,6 @@ if (process.env.NODE_ENV === "development") {
 	);
 }
 
-
 export default class BeautitabPlugin extends Plugin {
 	settings: BeautitabPluginSettings;
 	settingsObservable: Observable;
@@ -85,7 +90,8 @@ export default class BeautitabPlugin extends Plugin {
 
 		this.registerView(
 			BEAUTITAB_REACT_VIEW,
-			(leaf) => new ReactView(this.app, this.settingsObservable, leaf, this)
+			(leaf) =>
+				new ReactView(this.app, this.settingsObservable, leaf, this)
 		);
 
 		this.addSettingTab(new BeautitabPluginSettingTab(this.app, this));
@@ -132,15 +138,22 @@ export default class BeautitabPlugin extends Plugin {
 	 * If yes: open it by using executeCommandById
 	 * If no: Notice the user and tell them to enable it in the settings
 	 */
-	openSwitcherCommand(command: string):void {
+	openSwitcherCommand(command: string): void {
 		const pluginID = command.split(":")[0];
 		//@ts-ignore
 		const enabledPlugins = this.app.plugins.enabledPlugins as Set<string>;
-		if (enabledPlugins.has(pluginID)) {
+		//@ts-ignore
+		const internalPlugins = this.app.internalPlugins.plugins;
+		if (
+			enabledPlugins.has(pluginID) ||
+			internalPlugins[pluginID]?.enabled
+		) {
 			//@ts-ignore
 			this.app.commands.executeCommandById(command);
 		} else {
-			new Notice(`Plugin ${pluginID} is not enabled. Please enable it in the settings.`);
+			new Notice(
+				`Plugin ${pluginID} is not enabled. Please enable it in the settings.`
+			);
 		}
 	}
 }
@@ -317,10 +330,10 @@ class BeautitabPluginSettingTab extends PluginSettingTab {
 			.addText((component) => {
 				component
 					.setValue(this.plugin.settings.inlineSearchProvider.display)
-					.setDisabled(true)
+					.setDisabled(true);
 			})
 			.addButton((component) => {
-				component.setButtonText("Change")
+				component.setButtonText("Change");
 				component.setTooltip("Choose search provider");
 				component.onClick(() => {
 					new ChooseSearchProvider(
@@ -389,12 +402,13 @@ class ChooseSearchProvider extends FuzzySuggestModal<SearchProvider> {
 		super(app);
 		this.settings = settings;
 		this.onSubmit = onSubmit;
-
 	}
 
 	getItems(): SearchProvider[] {
 		//@ts-ignore
-		const allCommands = Object.entries(this.app.commands.commands).filter(pluginId => SEARCH_PROVIDER.includes(pluginId[0].split(":")[0]));
+		const allCommands = Object.entries(this.app.commands.commands).filter(
+			(pluginId) => SEARCH_PROVIDER.includes(pluginId[0].split(":")[0])
+		);
 		const searchProviders: SearchProvider[] = [];
 		allCommands.forEach((command) => {
 			searchProviders.push({
@@ -414,5 +428,4 @@ class ChooseSearchProvider extends FuzzySuggestModal<SearchProvider> {
 		this.onSubmit(item);
 		this.close();
 	}
-
 }
