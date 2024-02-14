@@ -21,7 +21,7 @@ enum SEASONAL_THEME {
 	WINTER = "winter",
 	NEW_YEARS = "fireworks",
 	GROUNDHOG_DAY = "groundhog",
-	VALINTINES_DAY = "valintine",
+	VALENTINES_DAY = "valentine",
 	WOMENS_DAY = "womensday",
 	ST_PATRICS_DAY = "pub",
 	PI_DAY = "pie",
@@ -66,7 +66,7 @@ const getSeasonalTag = (date: Date) => {
 				case 2:
 					return SEASONAL_THEME.GROUNDHOG_DAY;
 				case 14:
-					return SEASONAL_THEME.VALINTINES_DAY;
+					return SEASONAL_THEME.VALENTINES_DAY;
 				default:
 					return SEASONAL_THEME.WINTER;
 			}
