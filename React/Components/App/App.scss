@@ -19,6 +19,7 @@
 		background-position: center center;
 		background-repeat: no-repeat;
 		background-size: cover;
+
 		.beautitab-wrapper {
 			height: 100%;
 			width: 100%;
@@ -70,10 +71,18 @@
 				.beautitab-time {
 					font-size: 1050%;
 					line-height: 1;
+
+					@media screen and (max-width: 520px) {
+						font-size: 500%;
+					}
 				}
 
 				.beautitab-greeting {
 					font-size: 3rem;
+
+					@media screen and (max-width: 520px) {
+						font-size: 2rem;
+					}
 				}
 			}
 
@@ -83,8 +92,16 @@
 				flex-direction: column;
 				width: 100%;
 				align-items: center;
+
 				.beautitab-search {
 					width: 50%;
+					min-width: 500px;
+
+					@media screen and (max-width: 520px) {
+						width: 90%;
+						min-width: auto;
+					}
+
 					.beautitab-search-wrapper {
 						height: 60px;
 						border-radius: 60px;
@@ -117,6 +134,8 @@
 					display: flex;
 					align-items: center;
 					justify-content: center;
+					overflow-y: auto;
+					width: 100%;
 
 					.beautitab-recentlyedited-file {
 						color: inherit;
@@ -164,10 +183,18 @@
 				);
 				text-align: center;
 
+				@media screen and (max-width: 599px) {
+					padding-bottom: 60px;
+				}
+
 				.beautitab-quote-content {
 					font-size: 1.1rem;
 					font-weight: 500;
 					margin-bottom: 5px;
+
+					@media screen and (max-width: 600px) {
+						font-size: 0.8rem;
+					}
 				}
 
 				.beautitab-quote-author {

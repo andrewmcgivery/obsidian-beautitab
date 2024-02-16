@@ -5,6 +5,7 @@ import {
 	Plugin,
 	PluginSettingTab,
 	Setting,
+	requestUrl,
 } from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "Utils/Observable";
@@ -86,6 +87,8 @@ export default class BeautitabPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
+		this.versionCheck();
+
 		this.settingsObservable = new Observable(this.settings);
 
 		this.registerView(
@@ -119,6 +122,45 @@ export default class BeautitabPlugin extends Plugin {
 	 */
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	/**
+	 * Check the local plugin version against github. If there is a new version, notify the user.
+	 */
+	async versionCheck() {
+		const localVersion = process.env.PLUGIN_VERSION;
+		const stableVersion = await requestUrl(
+			"https://raw.githubusercontent.com/andrewmcgivery/obsidian-beautitab/main/package.json"
+		).then(async (res) => {
+			if (res.status === 200) {
+				const response = await res.json;
+				return response.version;
+			}
+		});
+		const betaVersion = await requestUrl(
+			"https://raw.githubusercontent.com/andrewmcgivery/obsidian-beautitab/beta/package.json"
+		).then(async (res) => {
+			if (res.status === 200) {
+				const response = await res.json;
+				return response.version;
+			}
+		});
+
+		console.log(localVersion);
+
+		if (localVersion?.indexOf("beta") !== -1) {
+			if (localVersion !== betaVersion) {
+				new Notice(
+					"There is a beta update available for the Beautitab plugin. Please update to to the latest version to get the latest features!",
+					0
+				);
+			}
+		} else if (localVersion !== stableVersion) {
+			new Notice(
+				"There is an update available for the Beautitab plugin. Please update to to the latest version to get the latest features!",
+				0
+			);
+		}
 	}
 
 	/**
