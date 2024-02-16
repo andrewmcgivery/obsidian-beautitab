@@ -1,5 +1,6 @@
 .workspace-tabs .workspace-leaf-content.beautitab {
 	color: #dadada;
+	container-type: size;
 
 	.view-header {
 		display: none;
@@ -72,7 +73,15 @@
 					font-size: 1050%;
 					line-height: 1;
 
-					@media screen and (max-width: 520px) {
+					@container (max-width: 520px) {
+						font-size: 850%;
+					}
+
+					@container (max-width: 320px) {
+						font-size: 700%;
+					}
+
+					@container (max-width: 250px) {
 						font-size: 500%;
 					}
 				}
@@ -80,8 +89,16 @@
 				.beautitab-greeting {
 					font-size: 3rem;
 
-					@media screen and (max-width: 520px) {
+					@container (max-width: 520px) {
+						font-size: 2.5rem;
+					}
+
+					@container (max-width: 320px) {
 						font-size: 2rem;
+					}
+
+					@container (max-width: 250px) {
+						font-size: 1.5rem;
 					}
 				}
 			}
@@ -97,7 +114,7 @@
 					width: 50%;
 					min-width: 500px;
 
-					@media screen and (max-width: 520px) {
+					@container (max-width: 520px) {
 						width: 90%;
 						min-width: auto;
 					}
@@ -183,8 +200,8 @@
 				);
 				text-align: center;
 
-				@media screen and (max-width: 599px) {
-					padding-bottom: 60px;
+				@container (max-width: 599px) {
+					padding-bottom: 80px;
 				}
 
 				.beautitab-quote-content {
@@ -192,7 +209,7 @@
 					font-weight: 500;
 					margin-bottom: 5px;
 
-					@media screen and (max-width: 600px) {
+					@container (max-width: 600px) {
 						font-size: 0.8rem;
 					}
 				}
