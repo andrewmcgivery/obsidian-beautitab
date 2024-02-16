@@ -146,8 +146,6 @@ export default class BeautitabPlugin extends Plugin {
 			}
 		});
 
-		console.log(localVersion);
-
 		if (localVersion?.indexOf("beta") !== -1) {
 			if (localVersion !== betaVersion) {
 				new Notice(
