@@ -30,6 +30,7 @@ jobs:
               uses: softprops/action-gh-release@v1
               with:
                   tag_name: ${{ env.PACKAGE_VERSION }}
+                  prerelease: true
                   files: |
                       ${{ env.PLUGIN_NAME }}-${{ env.PACKAGE_VERSION }}.zip
                       dist/main.js
