@@ -95,7 +95,7 @@ All customizations can be completed within the settings screen.
 
 ![Screenshot of Beautitab](screenshots/screenshot6.png)
 
-![Screenshot of Beautitab](screenshots/screenshot7.png)
+![Screenshot of Beautitab](screenshots/screenshot8.png)
 
 ## Reporting issues
 
