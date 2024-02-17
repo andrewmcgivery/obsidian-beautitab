@@ -5,6 +5,8 @@ import getTime from "React/Utils/getTime";
 import Observable from "Utils/Observable";
 import BeautitabPlugin, { BeautitabPluginSettings } from "main";
 import getBackground from "React/Utils/getBackground";
+import getTimeOfDayGreeting from "React/Utils/getTimeOfDayGreeting";
+import { getBookmarks } from "React/Utils/getBookmarks";
 
 /**
  * Given an icon name, converts a Obsidian icon to a usable SVG string and embeds it into a span.
@@ -25,8 +27,13 @@ const Icon = ({ name }: { name: string }) => {
 	);
 };
 
-const App = ({ settingsObservable, plugin }: { settingsObservable: Observable, plugin: BeautitabPlugin }) => {
-	const [time, setTime] = useState(getTime());
+const App = ({
+	settingsObservable,
+	plugin,
+}: {
+	settingsObservable: Observable;
+	plugin: BeautitabPlugin;
+}) => {
 	const [quote, setQuote] = useState<{
 		content: string;
 		author: string;
@@ -34,6 +41,7 @@ const App = ({ settingsObservable, plugin }: { settingsObservable: Observable, p
 	const [settings, setSettings] = useState<BeautitabPluginSettings>(
 		settingsObservable.getValue()
 	);
+	const [time, setTime] = useState(getTime(settings.timeFormat));
 
 	const obsidian = useObsidian();
 	const background = getBackground(
@@ -54,19 +62,24 @@ const App = ({ settingsObservable, plugin }: { settingsObservable: Observable, p
 		return files?.slice(0, 5);
 	}, [allVaultFiles]);
 
+	const bookmarks = useMemo(
+		() => getBookmarks(obsidian, settings).slice(0, 5),
+		[obsidian, settings]
+	);
+
 	/**
 	 * Keep the time up to date by updating it every second
 	 * Note that this shouldn't cause extra renders because calling "setTime" with a duplicate value should skip the render
 	 */
 	useEffect(() => {
 		const timer = setInterval(() => {
-			setTime(getTime());
+			setTime(getTime(settings.timeFormat));
 		}, 1000);
 
 		return () => {
 			clearInterval(timer);
 		};
-	}, [setTime]);
+	}, [setTime, settings]);
 
 	/**
 	 * Get a random quote
@@ -127,7 +140,10 @@ const App = ({ settingsObservable, plugin }: { settingsObservable: Observable, p
 					)}
 					{settings.showGreeting && (
 						<div className="beautitab-greeting">
-							{settings.greetingText}
+							{settings.greetingText.replace(
+								/{{greeting}}/gi,
+								getTimeOfDayGreeting()
+							)}
 						</div>
 					)}
 				</div>
@@ -173,6 +189,29 @@ const App = ({ settingsObservable, plugin }: { settingsObservable: Observable, p
 										</a>
 									)
 							)}
+						</div>
+					)}
+					{settings.showBookmarks && (
+						<div className="beautitab-recentlyedited">
+							{bookmarks?.map((file: TFile) => (
+								<a
+									key={file.path}
+									className="beautitab-recentlyedited-file"
+									data-path={file.path}
+									onClick={() => {
+										const leaf =
+											obsidian?.workspace.getMostRecentLeaf();
+										if (file instanceof TFile) {
+											leaf?.openFile(file);
+										}
+									}}
+								>
+									<Icon name="bookmark" />
+									<span className="beautitab-recentlyedited-file-name">
+										{file.basename}
+									</span>
+								</a>
+							))}
 						</div>
 					)}
 				</div>

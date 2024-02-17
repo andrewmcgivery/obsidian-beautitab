@@ -16,7 +16,7 @@ Beautitab is built to be very customizable with every elements being able to be 
 
 When the top left search icon is clicked, this button opens a search.
 
-The top left search icon can be shown/hidden via settings. Additionally, the behaviour of what occurs when the button is clicked can be configured to open either Quick Switcher or Omnisearch.
+The top left search icon can be shown/hidden via settings. Additionally, the behaviour of what occurs when the button is clicked can be configured to open one of a number of plugins.
 
 > [!TIP]
 > Another plugin you'd like to see as a provider? Open an issue!
@@ -25,19 +25,19 @@ The top left search icon can be shown/hidden via settings. Additionally, the beh
 
 Displays the current time in the middle of the screen and updates as time passes.
 
-The time can be shown/hidden via settings.
+The time can be shown/hidden via settings and configured to show in 12-hour format or 24-hour format.
 
 ### Greeting
 
 Displays a greeting in the middle of the screen.
 
-The greeting can be cutomized via settings or shown/hidden.
+The greeting can be customized via settings or shown/hidden.
 
 ### Inline search
 
 When the search box in the middle of the screen is clicked, this button opens a search.
 
-The inline search can be shown/hidden via settings. Additionally, the behaviour of what occurs when the button is clicked can be configured to open either Quick Switcher or Omnisearch.
+The inline search can be shown/hidden via settings. Additionally, the behaviour of what occurs when the button is clicked can be configured to open one of a number of plugins.
 
 > [!TIP]
 > Another plugin you'd like to see as a provider? Open a discussion!
@@ -47,6 +47,12 @@ The inline search can be shown/hidden via settings. Additionally, the behaviour 
 Shows your 5 most recently updated files in the middle of the screen.
 
 The recent files list can be shown/hidden via settings.
+
+### Bookmarks
+
+Shows 5 bookmarks in the middle of the screen, either from all bookmarks or from a specific bookmark group.
+
+The bookmarks list can be shown/hidden via settings.
 
 ### Quote
 
@@ -86,6 +92,10 @@ All customizations can be completed within the settings screen.
 ![Screenshot of Beautitab](screenshots/screenshot4.png)
 
 ![Screenshot of Beautitab](screenshots/screenshot5.png)
+
+![Screenshot of Beautitab](screenshots/screenshot6.png)
+
+![Screenshot of Beautitab](screenshots/screenshot7.png)
 
 ## Reporting issues
 
