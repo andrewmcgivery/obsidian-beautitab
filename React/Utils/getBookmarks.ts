@@ -1,5 +1,6 @@
-import { BOOKMARK_SOURCE, BeautitabPluginSettings } from "main";
 import { App, TAbstractFile } from "obsidian";
+import { BeautitabPluginSettings } from "src/Settings/Settings";
+import { BOOKMARK_SOURCE } from "src/Types/Enums";
 
 /**
  * Recursively gets all bookmarks

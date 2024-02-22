@@ -1,4 +1,4 @@
-import { BackgroundTheme } from "main";
+import { BackgroundTheme } from "src/Types/Enums";
 import getEasterDate from "./getEasterDate";
 import { isWithinDaysBefore } from "./isWithinXDays";
 
