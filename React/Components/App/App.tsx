@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useObsidian } from "../../Context/ObsidianAppContext";
 import { TFile, getIcon, requestUrl } from "obsidian";
 import getTime from "React/Utils/getTime";
-import Observable from "Utils/Observable";
-import BeautitabPlugin, { BeautitabPluginSettings } from "main";
+import Observable from "src/Utils/Observable";
+import BeautitabPlugin from "main";
 import getBackground from "React/Utils/getBackground";
 import getTimeOfDayGreeting from "React/Utils/getTimeOfDayGreeting";
 import { getBookmarks } from "React/Utils/getBookmarks";
+import { BeautitabPluginSettings } from "src/Settings/Settings";
 
 /**
  * Given an icon name, converts a Obsidian icon to a usable SVG string and embeds it into a span.

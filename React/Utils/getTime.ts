@@ -1,4 +1,4 @@
-import { TIME_FORMAT } from "main";
+import { TIME_FORMAT } from "src/Types/Enums";
 
 /**
  * Returns the current time in a 00:00 format, either 12-hour or 24-hour
