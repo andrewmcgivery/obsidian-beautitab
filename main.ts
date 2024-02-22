@@ -44,16 +44,18 @@ export default class BeautitabPlugin extends Plugin {
 			)
 		);
 
-		// @ts-ignore
-		if (process.env.EMULATE_MOBILE && !this.app.isMobile) {
+		if (process.env.NODE_ENV === "development") {
 			// @ts-ignore
-			this.app.emulateMobile(true);
-		}
+			if (process.env.EMULATE_MOBILE && !this.app.isMobile) {
+				// @ts-ignore
+				this.app.emulateMobile(true);
+			}
 
-		// @ts-ignore
-		if (!process.env.EMULATE_MOBILE && this.app.isMobile) {
 			// @ts-ignore
-			this.app.emulateMobile(false);
+			if (!process.env.EMULATE_MOBILE && this.app.isMobile) {
+				// @ts-ignore
+				this.app.emulateMobile(false);
+			}
 		}
 	}
 
