@@ -1,4 +1,6 @@
 @use "React/Components/App/App";
+@use "src/CustomQuotesModel/CustomQuotesModel";
+
 .setting-item.search-provider .setting-item-control input {
 	width: 100%;
 	border: none;

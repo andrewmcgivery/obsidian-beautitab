@@ -43,6 +43,18 @@ export default class BeautitabPlugin extends Plugin {
 				this.onLayoutChange.bind(this)
 			)
 		);
+
+		// @ts-ignore
+		if (process.env.EMULATE_MOBILE && !this.app.isMobile) {
+			// @ts-ignore
+			this.app.emulateMobile(true);
+		}
+
+		// @ts-ignore
+		if (!process.env.EMULATE_MOBILE && this.app.isMobile) {
+			// @ts-ignore
+			this.app.emulateMobile(false);
+		}
 	}
 
 	onunload() {}

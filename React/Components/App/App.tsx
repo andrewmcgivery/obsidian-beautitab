@@ -8,6 +8,7 @@ import getBackground from "React/Utils/getBackground";
 import getTimeOfDayGreeting from "React/Utils/getTimeOfDayGreeting";
 import { getBookmarks } from "React/Utils/getBookmarks";
 import { BeautitabPluginSettings } from "src/Settings/Settings";
+import getQuote from "React/Utils/getQuote";
 
 /**
  * Given an icon name, converts a Obsidian icon to a usable SVG string and embeds it into a span.
@@ -86,13 +87,12 @@ const App = ({
 	 * Get a random quote
 	 */
 	useEffect(() => {
-		requestUrl("https://api.quotable.io/random").then(async (res) => {
-			if (res.status === 200) {
-				const response = await res.json;
-				setQuote(response);
+		getQuote(settings.quoteSource, settings.customQuotes).then(
+			(newQuote: any) => {
+				setQuote(newQuote);
 			}
-		});
-	}, [setQuote]);
+		);
+	}, [setQuote, settings.quoteSource, settings.customQuotes]);
 
 	/**
 	 * Subscribe to settings from Obsidian

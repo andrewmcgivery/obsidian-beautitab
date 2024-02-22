@@ -2,8 +2,14 @@ import { getBookmarkGroups } from "React/Utils/getBookmarks";
 import BeautitabPlugin from "main";
 import { App, PluginSettingTab, Setting } from "obsidian";
 import ChooseSearchProvider from "src/ChooseSearchProvider/ChooseSearchProvider";
-import { BOOKMARK_SOURCE, BackgroundTheme, TIME_FORMAT } from "src/Types/Enums";
-import { SearchProvider } from "src/Types/Interfaces";
+import CustomQuotesModel from "src/CustomQuotesModel/CustomQuotesModel";
+import {
+	BOOKMARK_SOURCE,
+	BackgroundTheme,
+	QUOTE_SOURCE,
+	TIME_FORMAT,
+} from "src/Types/Enums";
+import { CustomQuote, SearchProvider } from "src/Types/Interfaces";
 import capitalizeFirstLetter from "src/Utils/capitalizeFirstLetter";
 
 const DEFAULT_SEARCH_PROVIDER: SearchProvider = {
@@ -34,6 +40,8 @@ export interface BeautitabPluginSettings {
 	bookmarkSource: BOOKMARK_SOURCE;
 	bookmarkGroup: string;
 	showQuote: boolean;
+	quoteSource: QUOTE_SOURCE;
+	customQuotes: CustomQuote[];
 }
 
 export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
@@ -52,6 +60,8 @@ export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	bookmarkSource: BOOKMARK_SOURCE.ALL,
 	bookmarkGroup: "",
 	showQuote: true,
+	quoteSource: QUOTE_SOURCE.QUOTEABLE,
+	customQuotes: [],
 };
 
 export class BeautitabPluginSettingTab extends PluginSettingTab {
@@ -296,10 +306,6 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 						this.plugin.settings
 					);
 					this.plugin.saveSettings();
-
-					component.inputEl.addEventListener("blur", () => {
-						this.display();
-					});
 				});
 			});
 
@@ -410,6 +416,46 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 					);
 					this.plugin.saveSettings();
 					this.display();
+				});
+			});
+
+		new Setting(containerEl)
+			.setName("Quote source")
+			.setDesc(
+				`Where should quotes be pulled from? You can use either built in quotes, your own quotes, or a combination of both.`
+			)
+			.addDropdown((component) => {
+				Object.values(QUOTE_SOURCE).forEach((source) => {
+					component.addOption(source, source);
+				});
+
+				component.setValue(this.plugin.settings.quoteSource);
+				component.onChange((value: QUOTE_SOURCE) => {
+					this.plugin.settings.quoteSource = value;
+					this.plugin.settingsObservable.setValue(
+						this.plugin.settings
+					);
+					this.plugin.saveSettings();
+					this.display();
+				});
+			});
+
+		new Setting(containerEl)
+			.setName("Custom quotes")
+			.setDesc(`${this.plugin.settings.customQuotes.length} quotes`)
+			.addButton((component) => {
+				component.setButtonText("Edit");
+
+				component.onClick(() => {
+					new CustomQuotesModel(
+						this.plugin,
+						(modifiedCustomQuotes: CustomQuote[]) => {
+							this.plugin.settings.customQuotes =
+								modifiedCustomQuotes;
+							this.plugin.saveSettings();
+							this.display();
+						}
+					).open();
 				});
 			});
 	}

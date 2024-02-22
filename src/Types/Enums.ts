@@ -20,3 +20,9 @@ export enum BOOKMARK_SOURCE {
 	ALL = "all",
 	GROUP = "group",
 }
+
+export enum QUOTE_SOURCE {
+	QUOTEABLE = "Quoteable",
+	MY_QUOTES = "My quotes",
+	BOTH = "Both",
+}
