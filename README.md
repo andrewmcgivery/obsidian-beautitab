@@ -58,7 +58,7 @@ The bookmarks list can be shown/hidden via settings.
 
 Shows a random quote at the bottom of the screen.
 
-The quote can be shown/hidden via settings. It can also be configured to use the built in quotes, your own custom both, or a mix of both.
+The quote can be shown/hidden via settings. It can also be configured to use the built in quotes, your own custom quotes, or a mix of both.
 
 ### Background
 
