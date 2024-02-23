@@ -194,25 +194,28 @@ const App = ({
 					)}
 					{settings.showBookmarks && (
 						<div className="beautitab-recentlyedited">
-							{bookmarks?.map((file: TFile) => (
-								<a
-									key={file.path}
-									className="beautitab-recentlyedited-file"
-									data-path={file.path}
-									onClick={() => {
-										const leaf =
-											obsidian?.workspace.getMostRecentLeaf();
-										if (file instanceof TFile) {
-											leaf?.openFile(file);
-										}
-									}}
-								>
-									<Icon name="bookmark" />
-									<span className="beautitab-recentlyedited-file-name">
-										{file.basename}
-									</span>
-								</a>
-							))}
+							{bookmarks?.map(
+								(file: TFile) =>
+									file && (
+										<a
+											key={file.path}
+											className="beautitab-recentlyedited-file"
+											data-path={file.path}
+											onClick={() => {
+												const leaf =
+													obsidian?.workspace.getMostRecentLeaf();
+												if (file instanceof TFile) {
+													leaf?.openFile(file);
+												}
+											}}
+										>
+											<Icon name="bookmark" />
+											<span className="beautitab-recentlyedited-file-name">
+												{file.basename}
+											</span>
+										</a>
+									)
+							)}
 						</div>
 					)}
 				</div>
