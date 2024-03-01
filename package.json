@@ -25,6 +25,7 @@
 		"typescript": "4.7.4"
 	},
 	"dependencies": {
+		"electron": "^25.8.1",
 		"esbuild-copy-static-files": "^0.1.0",
 		"esbuild-sass-plugin": "^2.16.0",
 		"react": "^18.2.0",

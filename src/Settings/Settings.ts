@@ -137,6 +137,7 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 			localBackgroundImagesSetting.addButton((component) => {
 				component.setButtonText("Add local image");
 				component.onClick(() => {
+					// @ts-ignore
 					electron.remote.dialog
 						.showOpenDialog({
 							properties: ["openFile", "multiSelections"],
