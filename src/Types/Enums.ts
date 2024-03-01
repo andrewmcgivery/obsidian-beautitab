@@ -9,6 +9,7 @@ export enum BackgroundTheme {
 	FOREST = "forest",
 	ANIMALS = "animals",
 	CUSTOM = "custom",
+	LOCAL = "local",
 }
 
 export enum TIME_FORMAT {

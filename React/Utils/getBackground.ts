@@ -149,7 +149,8 @@ const getSeasonalTag = (date: Date) => {
  */
 const getBackground = (
 	backgroundTheme: BackgroundTheme,
-	customBackground: string
+	customBackground: string,
+	localBackgrounds: string[]
 ) => {
 	switch (backgroundTheme) {
 		case BackgroundTheme.SEASONS_AND_HOLIDAYS:
@@ -159,6 +160,10 @@ const getBackground = (
 				.replace(/ /g, "")}`;
 		case BackgroundTheme.CUSTOM:
 			return customBackground;
+		case BackgroundTheme.LOCAL:
+			return localBackgrounds[
+				Math.floor(Math.random() * localBackgrounds.length)
+			];
 		default:
 			return `https://source.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
 				.toDateString()

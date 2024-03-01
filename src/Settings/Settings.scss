@@ -1,0 +1,34 @@
+.beautitabsettings-localbackgrounds {
+	display: flex;
+	gap: 8px;
+
+	.beautitabsettings-localbackgrounds-background {
+		position: relative;
+
+		img {
+			width: 100px;
+			height: 100px;
+		}
+
+		.beautitabsettings-localbackgrounds-background-delete {
+			position: absolute;
+			top: 0;
+			right: 0;
+			background-color: transparent;
+			border: none;
+			padding: 2px 4px;
+			margin: 0;
+			height: auto;
+			box-shadow: none;
+			line-height: 1;
+			font-size: 1em;
+			cursor: pointer;
+			text-shadow: rgba(0, 0, 0, 0.5) 0px 1px 5px;
+			font-weight: bold;
+
+			&:hover {
+				color: #ff0000;
+			}
+		}
+	}
+}

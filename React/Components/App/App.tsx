@@ -46,9 +46,18 @@ const App = ({
 	const [time, setTime] = useState(getTime(settings.timeFormat));
 
 	const obsidian = useObsidian();
-	const background = getBackground(
-		settings.backgroundTheme,
-		settings.customBackground
+	const background = useMemo(
+		() =>
+			getBackground(
+				settings.backgroundTheme,
+				settings.customBackground,
+				settings.localBackgrounds
+			),
+		[
+			settings.backgroundTheme,
+			settings.customBackground,
+			settings.localBackgrounds,
+		]
 	);
 
 	const allVaultFiles = obsidian?.vault.getAllLoadedFiles();
@@ -112,9 +121,9 @@ const App = ({
 	return (
 		<div
 			className="beautitab-root"
+			// @ts-ignore
 			style={{
-				// @ts-ignore
-				"--background": `url("${background}")`,
+				backgroundImage: `url("${background}")`,
 			}}
 		>
 			<div className="beautitab-wrapper">

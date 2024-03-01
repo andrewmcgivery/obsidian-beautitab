@@ -1,3 +1,4 @@
+import fs from "fs";
 import { getBookmarkGroups } from "React/Utils/getBookmarks";
 import BeautitabPlugin from "main";
 import { App, PluginSettingTab, Setting } from "obsidian";
@@ -11,6 +12,10 @@ import {
 } from "src/Types/Enums";
 import { CustomQuote, SearchProvider } from "src/Types/Interfaces";
 import capitalizeFirstLetter from "src/Utils/capitalizeFirstLetter";
+import electron from "electron";
+import ConfirmModal from "src/ConfirmModal/ConfirmModal";
+import ChooseImageSuggestModal from "src/ChooseImageSuggestModal/ChooseImageSuggestModal";
+import path from "path";
 
 const DEFAULT_SEARCH_PROVIDER: SearchProvider = {
 	command: "switcher:open",
@@ -27,6 +32,7 @@ export const SEARCH_PROVIDER = [
 export interface BeautitabPluginSettings {
 	backgroundTheme: BackgroundTheme;
 	customBackground: string;
+	localBackgrounds: string[];
 	showTopLeftSearchButton: boolean;
 	topLeftSearchProvider: SearchProvider;
 	showTime: boolean;
@@ -47,6 +53,7 @@ export interface BeautitabPluginSettings {
 export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	backgroundTheme: BackgroundTheme.SEASONS_AND_HOLIDAYS,
 	customBackground: "",
+	localBackgrounds: [],
 	showTopLeftSearchButton: true,
 	topLeftSearchProvider: DEFAULT_SEARCH_PROVIDER,
 	showTime: true,
@@ -85,7 +92,7 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Background theme")
 			.setDesc(
-				`What theme would you like to utilize for the random backgrounds? "Seasons and Holidays" will use a different tag depending on the time of the year. Custom will allow you to input your own url.`
+				`What theme would you like to utilize for the random backgrounds? "Seasons and Holidays" will use a different tag depending on the time of the year. Custom will allow you to input your own url. Local will use the local images imported below.`
 			)
 			.addDropdown((component) => {
 				Object.values(BackgroundTheme).forEach((theme) => {
@@ -120,6 +127,101 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 					});
 				});
 		}
+
+		const localBackgroundImagesSetting = new Setting(containerEl).setName(
+			"Local background images"
+		);
+
+		// @ts-ignore
+		if (!this.app.isMobile) {
+			localBackgroundImagesSetting.addButton((component) => {
+				component.setButtonText("Add local image");
+				component.onClick(() => {
+					electron.remote.dialog
+						.showOpenDialog({
+							properties: ["openFile", "multiSelections"],
+							title: "Add background images",
+							filters: [
+								{ name: "Images", extensions: ["jpg", "png"] },
+							],
+						})
+						.then((result: any) => {
+							if (!result.canceled) {
+								result.filePaths.forEach((filePath: string) => {
+									const fileData = fs.readFileSync(filePath);
+									const base64Data =
+										fileData.toString("base64");
+
+									this.plugin.settings.localBackgrounds.push(
+										`data:image/png;base64,${base64Data}`
+									);
+								});
+
+								this.plugin.saveSettings();
+								this.display();
+							}
+						});
+				});
+			});
+		}
+
+		localBackgroundImagesSetting.addButton((component) => {
+			component.setButtonText("Add vault image");
+			component.onClick(() => {
+				new ChooseImageSuggestModal(this.app, async (result) => {
+					const fullPath = path.join(
+						// @ts-ignore
+						this.app.vault.adapter.basePath,
+						result.path
+					);
+					const fileData = fs.readFileSync(fullPath);
+					const base64Data = fileData.toString("base64");
+
+					this.plugin.settings.localBackgrounds.push(
+						`data:image/png;base64,${base64Data}`
+					);
+					this.plugin.saveSettings();
+					this.display();
+				}).open();
+			});
+		});
+
+		const localBackgroundsDiv = containerEl.createEl("div", {
+			cls: "beautitabsettings-localbackgrounds",
+		});
+
+		this.plugin.settings.localBackgrounds.forEach(
+			(localBackground, index) => {
+				const backgroundDiv = localBackgroundsDiv.createEl("div", {
+					cls: "beautitabsettings-localbackgrounds-background",
+				});
+				backgroundDiv.createEl("img", {
+					attr: {
+						src: localBackground,
+					},
+				});
+				backgroundDiv.createEl("button", {
+					text: "x",
+					cls: "beautitabsettings-localbackgrounds-background-delete",
+				});
+				backgroundDiv.addEventListener("click", () => {
+					new ConfirmModal(
+						this.app,
+						() => {
+							this.plugin.settings.localBackgrounds.splice(
+								index,
+								1
+							);
+							this.plugin.saveSettings();
+							this.display();
+						},
+						"Remove background",
+						`Are you sure?`,
+						"Remove"
+					).open();
+				});
+			}
+		);
 
 		/****************************************
 		 * Search settings
