@@ -1,4 +1,4 @@
-import { App, FuzzySuggestModal } from "obsidian";
+import { App, FuzzySuggestModal, TFile } from "obsidian";
 import { BeautitabPluginSettings } from "src/Settings/Settings";
 
 export interface Image {
@@ -6,12 +6,12 @@ export interface Image {
 	path: string;
 }
 
-class ChooseImageSuggestModal extends FuzzySuggestModal<Image> {
+class ChooseImageSuggestModal extends FuzzySuggestModal<TFile> {
 	settings: BeautitabPluginSettings;
-	onSubmit: (result: Image) => void;
-	result: Image;
+	onSubmit: (result: TFile) => void;
+	result: TFile;
 
-	constructor(app: App, onSubmit: (result: Image) => void) {
+	constructor(app: App, onSubmit: (result: TFile) => void) {
 		super(app);
 		this.onSubmit = onSubmit;
 	}
@@ -19,18 +19,17 @@ class ChooseImageSuggestModal extends FuzzySuggestModal<Image> {
 	/**
 	 * Gets all png/jpg images from the vault
 	 */
-	getItems(): Image[] {
+	getItems(): TFile[] {
 		return this.app.vault
 			.getFiles()
-			.filter((f) => ["jpg", "jpeg", "png"].includes(f.extension))
-			.map((f) => ({ name: f.name, path: f.path }));
+			.filter((f) => ["jpg", "jpeg", "png"].includes(f.extension));
 	}
 
-	getItemText(item: Image): string {
+	getItemText(item: TFile): string {
 		return item.name;
 	}
 
-	onChooseItem(item: Image, evt: MouseEvent | KeyboardEvent): void {
+	onChooseItem(item: TFile, evt: MouseEvent | KeyboardEvent): void {
 		this.result = item;
 		this.onSubmit(item);
 		this.close();

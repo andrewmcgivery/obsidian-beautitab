@@ -171,17 +171,38 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 			component.onClick(() => {
 				new ChooseImageSuggestModal(this.app, async (result) => {
 					try {
+						const fileData = await this.app.vault.readBinary(
+							result
+						);
+						const buffer = Buffer.from(fileData);
+						const base64Data = buffer.toString("base64");
+
+						this.plugin.settings.localBackgrounds.push(
+							`data:image/png;base64,${base64Data}`
+						);
+						this.plugin.saveSettings();
+						this.display();
+					} catch (err) {
+						alert("error: " + err);
+					}
+
+					/*try {
 						alert("result.path: " + result.path);
 						alert(
 							"this.app.vault.adapter.basePath: " +
 								// @ts-ignore
 								this.app.vault.adapter.basePath
 						);
-						const fullPath = path.join(
-							// @ts-ignore
-							this.app.vault.adapter.basePath,
-							result.path
-						);
+
+						// @ts-ignore
+						const fullPath = this.app.isMobile
+							? // @ts-ignore
+							  `${this.app.vault.adapter.basePath}/${result.path}`
+							: path.join(
+									// @ts-ignore
+									this.app.vault.adapter.basePath,
+									result.path
+							  );
 						alert("fullPath " + fullPath);
 						const fileData = fs.readFileSync(fullPath);
 						const base64Data = fileData.toString("base64");
@@ -195,7 +216,7 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 						this.display();
 					} catch (err) {
 						alert("error: " + err);
-					}
+					}*/
 				}).open();
 			});
 		});
