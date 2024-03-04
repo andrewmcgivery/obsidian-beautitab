@@ -170,13 +170,22 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 			component.setButtonText("Add vault image");
 			component.onClick(() => {
 				new ChooseImageSuggestModal(this.app, async (result) => {
+					alert("result.path: " + result.path);
+					alert(
+						"this.app.vault.adapter.basePath: " +
+							// @ts-ignore
+							this.app.vault.adapter.basePath
+					);
 					const fullPath = path.join(
 						// @ts-ignore
 						this.app.vault.adapter.basePath,
 						result.path
 					);
+					alert("fullPath " + fullPath);
 					const fileData = fs.readFileSync(fullPath);
 					const base64Data = fileData.toString("base64");
+
+					alert("base64Data: " + base64Data);
 
 					this.plugin.settings.localBackgrounds.push(
 						`data:image/png;base64,${base64Data}`
