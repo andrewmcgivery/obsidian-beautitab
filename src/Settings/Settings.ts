@@ -1,7 +1,7 @@
 import fs from "fs";
 import { getBookmarkGroups } from "React/Utils/getBookmarks";
 import BeautitabPlugin from "main";
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, PluginSettingTab, Setting, arrayBufferToBase64 } from "obsidian";
 import ChooseSearchProvider from "src/ChooseSearchProvider/ChooseSearchProvider";
 import CustomQuotesModel from "src/CustomQuotesModel/CustomQuotesModel";
 import {
@@ -15,7 +15,6 @@ import capitalizeFirstLetter from "src/Utils/capitalizeFirstLetter";
 import electron from "electron";
 import ConfirmModal from "src/ConfirmModal/ConfirmModal";
 import ChooseImageSuggestModal from "src/ChooseImageSuggestModal/ChooseImageSuggestModal";
-import path from "path";
 
 const DEFAULT_SEARCH_PROVIDER: SearchProvider = {
 	command: "switcher:open",
@@ -174,8 +173,7 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 						const fileData = await this.app.vault.readBinary(
 							result
 						);
-						const buffer = Buffer.from(fileData);
-						const base64Data = buffer.toString("base64");
+						const base64Data = arrayBufferToBase64(fileData);
 
 						this.plugin.settings.localBackgrounds.push(
 							`data:image/png;base64,${base64Data}`
