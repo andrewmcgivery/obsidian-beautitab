@@ -70,7 +70,7 @@ You may also select "transparent" or "transparent with shadows" mode if you woul
 
 #### Seasons and holidays (_Recommended_)
 
-This specia theme will show diferent images depending on the time of the year. For example, will show fireworks on news years, pumpkins in the fall, and holiday images in December.
+This special theme will show diferent images depending on the time of the year. For example, will show fireworks on news years, pumpkins in the fall, and holiday images in December.
 
 > [!TIP]
 > If there is a theme you feel we should celebrate in the Seasons and holidays theme, open a discussion!
