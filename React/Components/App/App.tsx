@@ -9,6 +9,7 @@ import getTimeOfDayGreeting from "React/Utils/getTimeOfDayGreeting";
 import { getBookmarks } from "React/Utils/getBookmarks";
 import { BeautitabPluginSettings } from "src/Settings/Settings";
 import getQuote from "React/Utils/getQuote";
+import { BackgroundTheme } from "src/Types/Enums";
 
 /**
  * Given an icon name, converts a Obsidian icon to a usable SVG string and embeds it into a span.
@@ -120,7 +121,17 @@ const App = ({
 
 	return (
 		<div
-			className="beautitab-root"
+			className={`beautitab-root ${
+				settings.backgroundTheme === BackgroundTheme.TRANSPARENT &&
+				"beautitab-root--transparent"
+			}
+			
+			${
+				settings.backgroundTheme ===
+					BackgroundTheme.TRANSPARENT_WITH_SHADOWS &&
+				"beautitab-root--transparentWithShadows"
+			}
+			`}
 			// @ts-ignore
 			style={{
 				backgroundImage: `url("${background}")`,

@@ -164,6 +164,9 @@ const getBackground = (
 			return localBackgrounds[
 				Math.floor(Math.random() * localBackgrounds.length)
 			];
+		case BackgroundTheme.TRANSPARENT_WITH_SHADOWS:
+		case BackgroundTheme.TRANSPARENT:
+			return null;
 		default:
 			return `https://source.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
 				.toDateString()

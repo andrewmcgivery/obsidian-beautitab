@@ -10,6 +10,8 @@ export enum BackgroundTheme {
 	ANIMALS = "animals",
 	CUSTOM = "custom",
 	LOCAL = "local",
+	TRANSPARENT = "transparent",
+	TRANSPARENT_WITH_SHADOWS = "transparent with shadows",
 }
 
 export enum TIME_FORMAT {

@@ -21,6 +21,26 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 
+		&.beautitab-root--transparent {
+			background: transparent;
+
+			.beautitab-wrapper {
+				background: transparent;
+
+				.beautitab-top {
+					background: transparent;
+				}
+
+				.beautitab-quote {
+					background: transparent;
+				}
+			}
+		}
+
+		&.beautitab-root--transparentWithShadows {
+			background: transparent;
+		}
+
 		.beautitab-wrapper {
 			height: 100%;
 			width: 100%;
