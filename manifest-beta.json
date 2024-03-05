@@ -1,7 +1,7 @@
 {
 	"id": "beautitab",
 	"name": "Beautitab",
-	"version": "1.4.0-beta.1",
+	"version": "1.5.0-beta.5",
 	"minAppVersion": "0.15.0",
 	"description": "Creates a customizable new tab view with beautiful backgrounds, quotes, search, and more.",
 	"author": "Andrew McGivery",
