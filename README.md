@@ -64,9 +64,13 @@ The quote can be shown/hidden via settings. It can also be configured to use the
 
 A random background is displayed on the Beautitab screen. This background will remain the same for the remainder of the day or when Obsidian is reloaded/relaunched. Various themes can be selected in settings.
 
+In addition to the built in themes, you can provide your own images from your local computer (desktop only) or from your vault.
+
+You may also select "transparent" or "transparent with shadows" mode if you would like your theme's background to show through Beautitab.
+
 #### Seasons and holidays (_Recommended_)
 
-This specia theme will show diferent images depending on the time of the year. For example, will show fireworks on news years, pumpkins in the fall, and holiday images in December.
+This special theme will show diferent images depending on the time of the year. For example, will show fireworks on news years, pumpkins in the fall, and holiday images in December.
 
 > [!TIP]
 > If there is a theme you feel we should celebrate in the Seasons and holidays theme, open a discussion!
@@ -96,6 +100,8 @@ All customizations can be completed within the settings screen.
 ![Screenshot of Beautitab](screenshots/screenshot6.png)
 
 ![Screenshot of Beautitab](screenshots/screenshot8.png)
+
+![Screenshot of Beautitab](screenshots/screenshot9.png)
 
 ## Reporting issues
 

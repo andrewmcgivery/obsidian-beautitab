@@ -14,7 +14,7 @@ const getTime = (timeFormat: TIME_FORMAT) => {
 				? 12
 				: today.getHours();
 	} else {
-		hours = today.getHours();
+		hours = today.getHours().toString().padStart(2, "0");
 	}
 
 	const minutes = today.getMinutes().toString().padStart(2, "0");
