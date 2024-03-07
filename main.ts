@@ -133,13 +133,11 @@ export default class BeautitabPlugin extends Plugin {
 	openSwitcherCommand(command: string): void {
 		const pluginID = command.split(":")[0];
 		//@ts-ignore
-		const enabledPlugins = this.app.plugins.enabledPlugins as Set<string>;
+		const plugins = this.app.plugins.plugins;
 		//@ts-ignore
 		const internalPlugins = this.app.internalPlugins.plugins;
-		if (
-			enabledPlugins.has(pluginID) ||
-			internalPlugins[pluginID]?.enabled
-		) {
+
+		if (plugins[pluginID] || internalPlugins[pluginID]?.enabled) {
 			//@ts-ignore
 			this.app.commands.executeCommandById(command);
 		} else {

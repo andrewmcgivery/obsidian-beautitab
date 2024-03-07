@@ -3,7 +3,21 @@
 	container-type: size;
 
 	.view-header {
-		display: none;
+		background: transparent;
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 50%;
+		height: 40px;
+		justify-content: right;
+
+		.view-header-nav-buttons {
+			display: none;
+		}
+
+		.view-header-title-container {
+			display: none;
+		}
 	}
 
 	.view-content {
@@ -94,15 +108,7 @@
 					line-height: 1;
 
 					@container (max-width: 520px) {
-						font-size: 850%;
-					}
-
-					@container (max-width: 320px) {
-						font-size: 700%;
-					}
-
-					@container (max-width: 250px) {
-						font-size: 500%;
+						font-size: 30cqw;
 					}
 				}
 
@@ -110,15 +116,7 @@
 					font-size: 3rem;
 
 					@container (max-width: 520px) {
-						font-size: 2.5rem;
-					}
-
-					@container (max-width: 320px) {
-						font-size: 2rem;
-					}
-
-					@container (max-width: 250px) {
-						font-size: 1.5rem;
+						font-size: 8cqw;
 					}
 				}
 			}
