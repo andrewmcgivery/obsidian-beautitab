@@ -7,9 +7,10 @@
 		position: absolute;
 		top: 0;
 		right: 0;
-		width: 50%;
+		left: 40px;
 		height: 40px;
-		justify-content: right;
+		justify-content: space-between;
+		align-items: center;
 
 		.view-header-nav-buttons {
 			display: none;
@@ -17,6 +18,14 @@
 
 		.view-header-title-container {
 			display: none;
+		}
+
+		.view-action {
+			--icon-color: currentColor;
+		}
+
+		div {
+			margin-left: auto;
 		}
 	}
 
