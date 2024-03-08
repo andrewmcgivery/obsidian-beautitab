@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useObsidian } from "../../Context/ObsidianAppContext";
-import { TFile, getIcon, requestUrl } from "obsidian";
+import { TFile, getIcon } from "obsidian";
 import getTime from "React/Utils/getTime";
 import Observable from "src/Utils/Observable";
 import BeautitabPlugin from "main";
@@ -45,6 +45,7 @@ const App = ({
 		settingsObservable.getValue()
 	);
 	const [time, setTime] = useState(getTime(settings.timeFormat));
+	const mainDivRef = useRef<HTMLDivElement>(null);
 
 	const obsidian = useObsidian();
 	const background = useMemo(
@@ -119,6 +120,13 @@ const App = ({
 		};
 	}, [setSettings]);
 
+	/**
+	 * Auto focus so key presses launch search
+	 */
+	useEffect(() => {
+		mainDivRef?.current?.focus();
+	}, []);
+
 	return (
 		<div
 			className={`beautitab-root ${
@@ -136,6 +144,13 @@ const App = ({
 			style={{
 				backgroundImage: `url("${background}")`,
 			}}
+			onKeyDown={() => {
+				plugin.openSwitcherCommand(
+					settings.inlineSearchProvider.command
+				);
+			}}
+			tabIndex={0} // Make the div focusable so we can capture key strokes
+			ref={mainDivRef}
 		>
 			<div className="beautitab-wrapper">
 				<div className="beautitab-top">
