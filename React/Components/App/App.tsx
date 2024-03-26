@@ -144,10 +144,12 @@ const App = ({
 			style={{
 				backgroundImage: `url("${background}")`,
 			}}
-			onKeyDown={() => {
-				plugin.openSwitcherCommand(
-					settings.inlineSearchProvider.command
-				);
+			onKeyDown={(e) => {
+				if (!e.ctrlKey && !e.altKey && /^[A-Za-z0-9]$/.test(e.key)) {
+					plugin.openSwitcherCommand(
+						settings.inlineSearchProvider.command
+					);
+				}
 			}}
 			tabIndex={0} // Make the div focusable so we can capture key strokes
 			ref={mainDivRef}
