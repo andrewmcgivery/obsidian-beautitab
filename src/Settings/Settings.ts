@@ -1,9 +1,4 @@
-import fs from "fs";
-import { getBookmarkGroups } from "React/Utils/getBookmarks";
-import BeautitabPlugin from "main";
 import { App, PluginSettingTab, Setting, arrayBufferToBase64 } from "obsidian";
-import ChooseSearchProvider from "src/ChooseSearchProvider/ChooseSearchProvider";
-import CustomQuotesModel from "src/CustomQuotesModel/CustomQuotesModel";
 import {
 	BOOKMARK_SOURCE,
 	BackgroundTheme,
@@ -11,10 +6,16 @@ import {
 	TIME_FORMAT,
 } from "src/Types/Enums";
 import { CustomQuote, SearchProvider } from "src/Types/Interfaces";
+
+import BeautitabPlugin from "main";
+import ChooseImageSuggestModal from "src/ChooseImageSuggestModal/ChooseImageSuggestModal";
+import ChooseSearchProvider from "src/ChooseSearchProvider/ChooseSearchProvider";
+import ConfirmModal from "src/ConfirmModal/ConfirmModal";
+import CustomQuotesModel from "src/CustomQuotesModel/CustomQuotesModel";
 import capitalizeFirstLetter from "src/Utils/capitalizeFirstLetter";
 import electron from "electron";
-import ConfirmModal from "src/ConfirmModal/ConfirmModal";
-import ChooseImageSuggestModal from "src/ChooseImageSuggestModal/ChooseImageSuggestModal";
+import fs from "fs";
+import { getBookmarkGroups } from "React/Utils/getBookmarks";
 
 const DEFAULT_SEARCH_PROVIDER: SearchProvider = {
 	command: "switcher:open",
@@ -47,6 +48,7 @@ export interface BeautitabPluginSettings {
 	showQuote: boolean;
 	quoteSource: QUOTE_SOURCE;
 	customQuotes: CustomQuote[];
+	debugLogging: boolean
 }
 
 export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
@@ -68,6 +70,7 @@ export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	showQuote: true,
 	quoteSource: QUOTE_SOURCE.QUOTEABLE,
 	customQuotes: [],
+	debugLogging: false
 };
 
 export class BeautitabPluginSettingTab extends PluginSettingTab {
@@ -555,5 +558,15 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 					).open();
 				});
 			});
+		
+		new Setting(containerEl)
+		.setName('Enable Debug Logging')
+		.setDesc('Log debug information to the console.')
+		.addToggle(toggle => toggle
+			.setValue(this.plugin.settings.debugLogging)
+			.onChange(async (value) => {
+			this.plugin.settings.debugLogging = value;
+			await this.plugin.saveSettings();
+			}));
 	}
 }

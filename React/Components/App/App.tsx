@@ -1,15 +1,16 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import { useObsidian } from "../../Context/ObsidianAppContext";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TFile, getIcon } from "obsidian";
-import getTime from "React/Utils/getTime";
-import Observable from "src/Utils/Observable";
-import BeautitabPlugin from "main";
-import getBackground from "React/Utils/getBackground";
-import getTimeOfDayGreeting from "React/Utils/getTimeOfDayGreeting";
-import { getBookmarks } from "React/Utils/getBookmarks";
-import { BeautitabPluginSettings } from "src/Settings/Settings";
-import getQuote from "React/Utils/getQuote";
+
 import { BackgroundTheme } from "src/Types/Enums";
+import BeautitabPlugin from "main";
+import { BeautitabPluginSettings } from "src/Settings/Settings";
+import Observable from "src/Utils/Observable";
+import getBackground from "React/Utils/getBackground";
+import { getBookmarks } from "React/Utils/getBookmarks";
+import getQuote from "React/Utils/getQuote";
+import getTime from "React/Utils/getTime";
+import getTimeOfDayGreeting from "React/Utils/getTimeOfDayGreeting";
+import { useObsidian } from "../../Context/ObsidianAppContext";
 
 /**
  * Given an icon name, converts a Obsidian icon to a usable SVG string and embeds it into a span.
@@ -53,12 +54,14 @@ const App = ({
 			getBackground(
 				settings.backgroundTheme,
 				settings.customBackground,
-				settings.localBackgrounds
+				settings.localBackgrounds,
+				{ debugLogging: settings.debugLogging },
 			),
 		[
 			settings.backgroundTheme,
 			settings.customBackground,
 			settings.localBackgrounds,
+			settings.debugLogging,
 		]
 	);
 
