@@ -4,7 +4,7 @@ import { isWithinDaysBefore } from "./isWithinXDays";
 
 enum MONTH {
 	JANUARY = 1,
-	FEBUARY = 2,
+	FEBRUARY = 2,
 	MARCH = 3,
 	APRIL = 4,
 	MAY = 5,
@@ -23,7 +23,7 @@ enum SEASONAL_THEME {
 	GROUNDHOG_DAY = "groundhog",
 	VALENTINES_DAY = "valentine",
 	WOMENS_DAY = "womensday",
-	ST_PATRICS_DAY = "pub",
+	ST_PATRICKS_DAY = "pub",
 	PI_DAY = "pie",
 	EASTER = "easter",
 	APRIL_FOOLS = "laughing",
@@ -61,7 +61,7 @@ const getSeasonalTag = (date: Date) => {
 	switch (month) {
 		case MONTH.JANUARY:
 			return day === 1 ? SEASONAL_THEME.NEW_YEARS : SEASONAL_THEME.WINTER;
-		case MONTH.FEBUARY:
+		case MONTH.FEBRUARY:
 			switch (day) {
 				case 2:
 					return SEASONAL_THEME.GROUNDHOG_DAY;
@@ -77,7 +77,7 @@ const getSeasonalTag = (date: Date) => {
 				case 14:
 					return SEASONAL_THEME.PI_DAY;
 				case 17:
-					return SEASONAL_THEME.ST_PATRICS_DAY;
+					return SEASONAL_THEME.ST_PATRICKS_DAY;
 				default:
 					return SEASONAL_THEME.WINTER;
 			}
@@ -146,31 +146,51 @@ const getSeasonalTag = (date: Date) => {
  * Gets the background URL based on the theme settings, either for a specific theme, based on the season, or a custom background
  * @param backgroundTheme
  * @param customBackground
+ * @param localBackgrounds
+ * @param settings
  */
 const getBackground = (
 	backgroundTheme: BackgroundTheme,
 	customBackground: string,
-	localBackgrounds: string[]
+	localBackgrounds: string[],
+	settings: { debugLogging: boolean } // Add settings parameter
 ) => {
+	const logDebug = (message: string, ...optionalParams: any[]) => {
+		if (settings.debugLogging) {
+			console.log(message, ...optionalParams);
+		}
+	};
+
+	logDebug('Getting background with theme:', backgroundTheme);
+
 	switch (backgroundTheme) {
 		case BackgroundTheme.SEASONS_AND_HOLIDAYS:
 			const seasonalTag = getSeasonalTag(new Date());
-			return `https://source.unsplash.com/random?${seasonalTag}&cachetag=${new Date()
+			const url = `https://source.unsplash.com/random?${seasonalTag}&cachetag=${new Date()
 				.toDateString()
 				.replace(/ /g, "")}`;
+			logDebug('Seasonal tag:', seasonalTag);
+			logDebug('Unsplash URL:', url);
+			return url;
 		case BackgroundTheme.CUSTOM:
+			logDebug('Custom background:', customBackground);
 			return customBackground;
 		case BackgroundTheme.LOCAL:
-			return localBackgrounds[
+			const localBackground = localBackgrounds[
 				Math.floor(Math.random() * localBackgrounds.length)
 			];
+			logDebug('Local background:', localBackground);
+			return localBackground;
 		case BackgroundTheme.TRANSPARENT_WITH_SHADOWS:
 		case BackgroundTheme.TRANSPARENT:
+			logDebug('Transparent background selected');
 			return null;
 		default:
-			return `https://source.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
+			const defaultUrl = `https://source.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
 				.toDateString()
 				.replace(/ /g, "")}`;
+			logDebug('Default Unsplash URL:', defaultUrl);
+			return defaultUrl;
 	}
 };
 
