@@ -160,23 +160,30 @@ const getBackground = async (
 		date: Date;
 	}
 ): Promise<{ url: string, date: Date } | null> => {
-	const unsplash = createApi({
-		accessKey: apiKey,
-		fetch: fetchPolyfill,
-	});
 
 	switch (backgroundTheme) {
 		case BackgroundTheme.SEASONS_AND_HOLIDAYS:
-			const seasonalTag = getSeasonalTag(new Date());
-			//check the time of the cached background
-			//change the background if the cached background is older than 1 hour
 			if (
 				cachedBackground && cachedBackground.url.length > 0 &&
 				isWithinHoursBefore(new Date(cachedBackground.date), 1, new Date())
-			) {
+			)
 				return cachedBackground;
+			const seasonalTag = getSeasonalTag(new Date());
+			let old = {
+				url: `https://source.unsplash.com/random?${seasonalTag}&cachetag=${new Date()
+					.toDateString()
+					.replace(/ /g, "")}`,
+				date: new Date(),
 			}
-			const t = await unsplash.photos.getRandom({
+			if (apiKey.length === 0) {
+				return old;
+			}
+			let api = createApi({
+				accessKey: apiKey,
+				fetch: fetchPolyfill,
+			});
+
+			const t = await api.photos.getRandom({
 				query: seasonalTag,
 				count: 1,
 			}).then((result) => {
@@ -189,12 +196,7 @@ const getBackground = async (
 				return { url: t.urls.raw, date: new Date() };
 			}
 
-			return {
-				url: `https://api.unsplash.com/photos/random?${seasonalTag}&cachetag=${new Date()
-					.toDateString()
-					.replace(/ /g, "")}`,
-				date: new Date(),
-			};
+			return old;
 		case BackgroundTheme.CUSTOM:
 			return { url: customBackground, date: new Date() };
 		case BackgroundTheme.LOCAL:
@@ -210,10 +212,21 @@ const getBackground = async (
 			if (
 				cachedBackground && cachedBackground.url.length > 0 &&
 				isWithinHoursBefore(new Date(cachedBackground.date), 1, new Date())
-			) {
+			)
 				return cachedBackground;
+			old = {
+				url: `https://source.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
+					.toDateString()
+					.replace(/ /g, "")}`,
+				date: new Date(),
 			}
-			const random = await unsplash.photos.getRandom({
+			if (apiKey.length === 0) return old;
+
+			api = createApi({
+				accessKey: apiKey,
+				fetch: fetchPolyfill,
+			});
+			const random = await api.photos.getRandom({
 				count: 1,
 				query: backgroundTheme,
 			}).then((result) => {
@@ -223,14 +236,9 @@ const getBackground = async (
 				if (random instanceof Array) {
 					return { url: random[0].urls.raw, date: new Date() };
 				}
-				//@ts-ignore
 				return { url: random.urls.raw, date: new Date() };
 			}
-			return {
-				url: `https://api.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
-					.toDateString()
-					.replace(/ /g, "")}`, date: new Date()
-			};
+			return old;
 	}
 };
 
