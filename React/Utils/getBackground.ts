@@ -1,6 +1,9 @@
 import { BackgroundTheme } from "src/Types/Enums";
 import getEasterDate from "./getEasterDate";
-import { isWithinDaysBefore } from "./isWithinXDays";
+import { isWithinDaysBefore, isWithinHoursBefore } from "./isWithinXDays";
+import { createApi } from 'unsplash-js';
+//@ts-ignore - This is a polyfill for fetch and work using --lib dom
+import { fetch as fetchPolyfill } from 'whatwg-fetch';
 
 enum MONTH {
 	JANUARY = 1,
@@ -147,30 +150,87 @@ const getSeasonalTag = (date: Date) => {
  * @param backgroundTheme
  * @param customBackground
  */
-const getBackground = (
+const getBackground = async (
 	backgroundTheme: BackgroundTheme,
 	customBackground: string,
-	localBackgrounds: string[]
-) => {
+	localBackgrounds: string[],
+	apiKey: string,
+	cachedBackground?: {
+		url: string;
+		date: Date;
+	}
+): Promise<{ url: string, date: Date } | null> => {
+	const unsplash = createApi({
+		accessKey: apiKey,
+		fetch: fetchPolyfill,
+	});
+
 	switch (backgroundTheme) {
 		case BackgroundTheme.SEASONS_AND_HOLIDAYS:
 			const seasonalTag = getSeasonalTag(new Date());
-			return `https://source.unsplash.com/random?${seasonalTag}&cachetag=${new Date()
-				.toDateString()
-				.replace(/ /g, "")}`;
+			//check the time of the cached background
+			//change the background if the cached background is older than 1 hour
+			if (
+				cachedBackground && cachedBackground.url.length > 0 &&
+				isWithinHoursBefore(new Date(cachedBackground.date), 1, new Date())
+			) {
+				return cachedBackground;
+			}
+			const t = await unsplash.photos.getRandom({
+				query: seasonalTag,
+				count: 1,
+			}).then((result) => {
+				return result.response;
+			});
+			if (t) {
+				if (t instanceof Array) {
+					return { url: t[0].urls.raw, date: new Date() };
+				}
+				return { url: t.urls.raw, date: new Date() };
+			}
+
+			return {
+				url: `https://api.unsplash.com/photos/random?${seasonalTag}&cachetag=${new Date()
+					.toDateString()
+					.replace(/ /g, "")}`,
+				date: new Date(),
+			};
 		case BackgroundTheme.CUSTOM:
-			return customBackground;
+			return { url: customBackground, date: new Date() };
 		case BackgroundTheme.LOCAL:
-			return localBackgrounds[
-				Math.floor(Math.random() * localBackgrounds.length)
-			];
+			return {
+				url: localBackgrounds[
+					Math.floor(Math.random() * localBackgrounds.length)],
+				date: new Date()
+			};
 		case BackgroundTheme.TRANSPARENT_WITH_SHADOWS:
 		case BackgroundTheme.TRANSPARENT:
 			return null;
 		default:
-			return `https://source.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
-				.toDateString()
-				.replace(/ /g, "")}`;
+			if (
+				cachedBackground && cachedBackground.url.length > 0 &&
+				isWithinHoursBefore(new Date(cachedBackground.date), 1, new Date())
+			) {
+				return cachedBackground;
+			}
+			const random = await unsplash.photos.getRandom({
+				count: 1,
+				query: backgroundTheme,
+			}).then((result) => {
+				return result.response;
+			});
+			if (random) {
+				if (random instanceof Array) {
+					return { url: random[0].urls.raw, date: new Date() };
+				}
+				//@ts-ignore
+				return { url: random.urls.raw, date: new Date() };
+			}
+			return {
+				url: `https://api.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
+					.toDateString()
+					.replace(/ /g, "")}`, date: new Date()
+			};
 	}
 };
 

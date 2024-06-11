@@ -47,6 +47,11 @@ export interface BeautitabPluginSettings {
 	showQuote: boolean;
 	quoteSource: QUOTE_SOURCE;
 	customQuotes: CustomQuote[];
+	apiKey: string;
+	cachedBackground?: {
+		date: Date;
+		url: string;
+	}
 }
 
 export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
@@ -68,6 +73,7 @@ export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	showQuote: true,
 	quoteSource: QUOTE_SOURCE.QUOTEABLE,
 	customQuotes: [],
+	apiKey: "",
 };
 
 export class BeautitabPluginSettingTab extends PluginSettingTab {
@@ -87,6 +93,23 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 		 * Background settings
 		 ***************************************/
 		new Setting(containerEl).setHeading().setName(`Background settings`);
+
+		new Setting(containerEl)
+			.setName("Unsplash access key")
+			.setDesc(
+				`Register your unsplash access key at https://unsplash.com/developers to get access to random image. Leave empty if you use local image or custom URL.`
+			)
+			.addText((component) => {
+				component.setValue(this.plugin.settings.apiKey);
+				component.onChange((value) => {
+					this.plugin.settings.apiKey = value;
+					this.plugin.settingsObservable.setValue(
+						this.plugin.settings
+					);
+					this.plugin.saveSettings();
+					this.display();
+				});
+			});
 
 		new Setting(containerEl)
 			.setName("Background theme")

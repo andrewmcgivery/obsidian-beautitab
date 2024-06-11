@@ -38,3 +38,20 @@ export const isWithinDaysAfter = (
 		timestampB < timestampA && timestampA - timestampB <= daysInMilliseconds
 	);
 };
+
+/**
+ * Returns true if dateA within X hours of dateB (dateB minus X)
+ * @param dateA
+ * @param hours
+ * @param dateB
+ * @returns
+ */
+export const isWithinHoursBefore = (dateA: Date, hours: number, dateB: Date) => {
+	const timestampA: number = dateA.getTime();
+	const timestampB: number = dateB.getTime();
+	const hoursInMilliseconds: number = hours * 60 * 60 * 1000;
+
+	return (
+		timestampA < timestampB && timestampB - timestampA <= hoursInMilliseconds
+	);
+};
