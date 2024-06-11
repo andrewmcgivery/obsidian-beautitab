@@ -1,7 +1,7 @@
 import fs from "fs";
 import { getBookmarkGroups } from "React/Utils/getBookmarks";
 import BeautitabPlugin from "main";
-import { App, PluginSettingTab, Setting, arrayBufferToBase64 } from "obsidian";
+import { App, PluginSettingTab, Setting, arrayBufferToBase64, sanitizeHTMLToDom } from "obsidian";
 import ChooseSearchProvider from "src/ChooseSearchProvider/ChooseSearchProvider";
 import CustomQuotesModel from "src/CustomQuotesModel/CustomQuotesModel";
 import {
@@ -94,11 +94,10 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 		 ***************************************/
 		new Setting(containerEl).setHeading().setName(`Background settings`);
 
+		const backgroundApiKeyDesc = `Register your unsplash access key at <a href="https://unsplash.com/developers">unsplash.com/developers</a> to get access to random image. Leave empty if you use local image or custom URL.`;
 		new Setting(containerEl)
 			.setName("Unsplash access key")
-			.setDesc(
-				`Register your unsplash access key at https://unsplash.com/developers to get access to random image. Leave empty if you use local image or custom URL.`
-			)
+			.setDesc(sanitizeHTMLToDom(backgroundApiKeyDesc))
 			.addText((component) => {
 				component.setValue(this.plugin.settings.apiKey);
 				component.onChange((value) => {
