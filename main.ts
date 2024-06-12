@@ -1,4 +1,4 @@
-import { Notice, Plugin, requestUrl } from "obsidian";
+import { Notice, Platform, Plugin, InternalPluginName } from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "src/Utils/Observable";
 import {
@@ -130,10 +130,9 @@ export default class BeautitabPlugin extends Plugin {
 	 */
 	openSwitcherCommand(command: string): void {
 		const pluginID = command.split(":")[0];
-		const plugins = this.app.plugins.enabledPlugins.has(pluginID);
-		const internalPlugins = this.app.internalPlugins.getEnabledPlugins().find((plugin) => plugin.manifest.id === pluginID);
-
-		if (plugins || internalPlugins) {
+		const communitySwitcher = this.app.plugins.enabledPlugins.has(pluginID);
+		const internalSwitcher = this.app.internalPlugins.getEnabledPluginById(pluginID as InternalPluginName);
+		if (communitySwitcher || internalSwitcher) {
 			this.app.commands.executeCommandById(command);
 		} else {
 			new Notice(
