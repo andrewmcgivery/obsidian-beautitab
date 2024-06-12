@@ -45,21 +45,19 @@ export default class BeautitabPlugin extends Plugin {
 		);
 
 		if (process.env.NODE_ENV === "development") {
-			// @ts-ignore
-			if (process.env.EMULATE_MOBILE && !this.app.isMobile) {
-				// @ts-ignore
+			if (process.env.EMULATE_MOBILE && !Platform.isMobile) {
 				this.app.emulateMobile(true);
 			}
 
-			// @ts-ignore
-			if (!process.env.EMULATE_MOBILE && this.app.isMobile) {
-				// @ts-ignore
+			if (!process.env.EMULATE_MOBILE && Platform.isMobile) {
 				this.app.emulateMobile(false);
 			}
 		}
 	}
 
-	onunload() {}
+	onunload() {
+		console.log("unloading Beautitab");
+	}
 
 	/**
 	 * Load data from disk, stored in data.json in plugin folder
@@ -132,13 +130,10 @@ export default class BeautitabPlugin extends Plugin {
 	 */
 	openSwitcherCommand(command: string): void {
 		const pluginID = command.split(":")[0];
-		//@ts-ignore
-		const plugins = this.app.plugins.plugins;
-		//@ts-ignore
-		const internalPlugins = this.app.internalPlugins.plugins;
+		const plugins = this.app.plugins.enabledPlugins.has(pluginID);
+		const internalPlugins = this.app.internalPlugins.getEnabledPlugins().find((plugin) => plugin.manifest.id === pluginID);
 
-		if (plugins[pluginID] || internalPlugins[pluginID]?.enabled) {
-			//@ts-ignore
+		if (plugins || internalPlugins) {
 			this.app.commands.executeCommandById(command);
 		} else {
 			new Notice(

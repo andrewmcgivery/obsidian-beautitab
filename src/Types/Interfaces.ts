@@ -1,4 +1,5 @@
 import { BackgroundTheme } from "./Enums";
+import type {i18n} from "i18next";
 
 export interface SearchProvider {
 	command: string;
@@ -15,3 +16,7 @@ export interface CachedBackground {
 	date: Date;
 	theme?: BackgroundTheme;
 }
+
+declare global {
+	const i18next: i18n;
+  }
