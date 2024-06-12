@@ -10,6 +10,7 @@ import { getBookmarks } from "React/Utils/getBookmarks";
 import { BeautitabPluginSettings } from "src/Settings/Settings";
 import getQuote from "React/Utils/getQuote";
 import { BackgroundTheme } from "src/Types/Enums";
+import { CachedBackground } from "../../../src/Types/Interfaces";
 
 /**
  * Given an icon name, converts a Obsidian icon to a usable SVG string and embeds it into a span.
@@ -44,7 +45,7 @@ const App = ({
 	const [settings, setSettings] = useState<BeautitabPluginSettings>(
 		settingsObservable.getValue()
 	);
-	const [bg, setBg] = useState<{ date: Date; url: string } | null>(null);
+	const [bg, setBg] = useState<CachedBackground | null>(null);
 	const [time, setTime] = useState(getTime(settings.timeFormat));
 	const mainDivRef = useRef<HTMLDivElement>(null);
 
@@ -73,8 +74,11 @@ const App = ({
 		getResult();
 	}, [background]);
 
-	if (bg && bg.date !== settings.cachedBackground?.date) {
-		settings.cachedBackground = bg;
+	if (
+		(bg && bg.date !== settings.cachedBackground?.date) ||
+		(bg && bg.theme !== settings.cachedBackground?.theme)
+	) {
+		plugin.settings.cachedBackground = bg;
 		plugin.saveSettings();
 	}
 	const allVaultFiles = obsidian?.vault.getAllLoadedFiles();

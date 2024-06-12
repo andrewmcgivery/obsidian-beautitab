@@ -10,7 +10,7 @@ import {
 	QUOTE_SOURCE,
 	TIME_FORMAT,
 } from "src/Types/Enums";
-import { CustomQuote, SearchProvider } from "src/Types/Interfaces";
+import { CachedBackground, CustomQuote, SearchProvider } from "src/Types/Interfaces";
 import capitalizeFirstLetter from "src/Utils/capitalizeFirstLetter";
 import electron from "electron";
 import ConfirmModal from "src/ConfirmModal/ConfirmModal";
@@ -48,10 +48,7 @@ export interface BeautitabPluginSettings {
 	quoteSource: QUOTE_SOURCE;
 	customQuotes: CustomQuote[];
 	apiKey: string;
-	cachedBackground?: {
-		date: Date;
-		url: string;
-	}
+	cachedBackground?: CachedBackground;
 }
 
 export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
@@ -124,6 +121,7 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 
 				component.onChange((value: BackgroundTheme) => {
 					this.plugin.settings.backgroundTheme = value;
+					
 					this.plugin.settingsObservable.setValue(
 						this.plugin.settings
 					);
