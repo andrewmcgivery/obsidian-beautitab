@@ -1,6 +1,6 @@
 import { BackgroundTheme } from "src/Types/Enums";
 import getEasterDate from "./getEasterDate";
-import { isWithinDaysBefore, isWithinHoursBefore } from "./isWithinXDays";
+import { isWithinDaysBefore, isWithinHoursAfter } from "./isWithinXDays";
 import { createApi } from 'unsplash-js';
 //@ts-ignore - This is a polyfill for fetch and work using --lib dom
 import { fetch as fetchPolyfill } from 'whatwg-fetch';
@@ -163,7 +163,7 @@ const getBackground = async (
 		case BackgroundTheme.SEASONS_AND_HOLIDAYS:
 			if (
 				cachedBackground && cachedBackground.url.length > 0 && cachedBackground.theme === backgroundTheme &&
-				isWithinHoursBefore(new Date(cachedBackground.date), 1, new Date())
+				isWithinHoursAfter(new Date(cachedBackground.date), 1, new Date())
 			)
 				return cachedBackground;
 			const seasonalTag = getSeasonalTag(new Date());
@@ -202,7 +202,7 @@ const getBackground = async (
 			if (
 				cachedBackground && cachedBackground.url.length > 0 &&
 				backgroundTheme === cachedBackground.theme &&
-				isWithinHoursBefore(new Date(cachedBackground.date), 1, new Date())
+				isWithinHoursAfter(new Date(cachedBackground.date), 1, new Date())
 			) return cachedBackground;
 
 			if (apiKey.length === 0) return null;
