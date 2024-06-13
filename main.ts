@@ -1,4 +1,4 @@
-import { Notice, Platform, Plugin, InternalPluginName } from "obsidian";
+import { Notice, Platform, Plugin, InternalPluginName, requestUrl } from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "src/Utils/Observable";
 import {
