@@ -1,7 +1,7 @@
 import fs from "fs";
 import { getBookmarkGroups } from "React/Utils/getBookmarks";
 import BeautitabPlugin from "main";
-import { App, PluginSettingTab, Setting, arrayBufferToBase64 } from "obsidian";
+import { App, PluginSettingTab, Setting, arrayBufferToBase64, sanitizeHTMLToDom } from "obsidian";
 import ChooseSearchProvider from "src/ChooseSearchProvider/ChooseSearchProvider";
 import CustomQuotesModel from "src/CustomQuotesModel/CustomQuotesModel";
 import {
@@ -10,7 +10,7 @@ import {
 	QUOTE_SOURCE,
 	TIME_FORMAT,
 } from "src/Types/Enums";
-import { CustomQuote, SearchProvider } from "src/Types/Interfaces";
+import { CachedBackground, CustomQuote, SearchProvider } from "src/Types/Interfaces";
 import capitalizeFirstLetter from "src/Utils/capitalizeFirstLetter";
 import electron from "electron";
 import ConfirmModal from "src/ConfirmModal/ConfirmModal";
@@ -47,6 +47,8 @@ export interface BeautitabPluginSettings {
 	showQuote: boolean;
 	quoteSource: QUOTE_SOURCE;
 	customQuotes: CustomQuote[];
+	apiKey: string;
+	cachedBackground?: CachedBackground;
 }
 
 export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
@@ -68,6 +70,7 @@ export const DEFAULT_SETTINGS: BeautitabPluginSettings = {
 	showQuote: true,
 	quoteSource: QUOTE_SOURCE.QUOTEABLE,
 	customQuotes: [],
+	apiKey: "",
 };
 
 export class BeautitabPluginSettingTab extends PluginSettingTab {
@@ -88,6 +91,22 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 		 ***************************************/
 		new Setting(containerEl).setHeading().setName(`Background settings`);
 
+		const backgroundApiKeyDesc = `Register your unsplash access key at <a href="https://unsplash.com/developers">unsplash.com/developers</a> to get access to random image. Leave empty if you use local image or custom URL.`;
+		new Setting(containerEl)
+			.setName("Unsplash access key")
+			.setDesc(sanitizeHTMLToDom(backgroundApiKeyDesc))
+			.addText((component) => {
+				component.setValue(this.plugin.settings.apiKey);
+				component.onChange((value) => {
+					this.plugin.settings.apiKey = value;
+					this.plugin.settingsObservable.setValue(
+						this.plugin.settings
+					);
+					this.plugin.saveSettings();
+					this.display();
+				});
+			});
+
 		new Setting(containerEl)
 			.setName("Background theme")
 			.setDesc(
@@ -102,6 +121,7 @@ export class BeautitabPluginSettingTab extends PluginSettingTab {
 
 				component.onChange((value: BackgroundTheme) => {
 					this.plugin.settings.backgroundTheme = value;
+					
 					this.plugin.settingsObservable.setValue(
 						this.plugin.settings
 					);

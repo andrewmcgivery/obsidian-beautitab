@@ -1,4 +1,4 @@
-import { Notice, Plugin, requestUrl } from "obsidian";
+import { Notice, Platform, Plugin, InternalPluginName, requestUrl } from "obsidian";
 import { ReactView, BEAUTITAB_REACT_VIEW } from "./Views/ReactView";
 import Observable from "src/Utils/Observable";
 import {
@@ -45,21 +45,19 @@ export default class BeautitabPlugin extends Plugin {
 		);
 
 		if (process.env.NODE_ENV === "development") {
-			// @ts-ignore
-			if (process.env.EMULATE_MOBILE && !this.app.isMobile) {
-				// @ts-ignore
+			if (process.env.EMULATE_MOBILE && !Platform.isMobile) {
 				this.app.emulateMobile(true);
 			}
 
-			// @ts-ignore
-			if (!process.env.EMULATE_MOBILE && this.app.isMobile) {
-				// @ts-ignore
+			if (!process.env.EMULATE_MOBILE && Platform.isMobile) {
 				this.app.emulateMobile(false);
 			}
 		}
 	}
 
-	onunload() {}
+	onunload() {
+		console.log("unloading Beautitab");
+	}
 
 	/**
 	 * Load data from disk, stored in data.json in plugin folder
@@ -132,13 +130,9 @@ export default class BeautitabPlugin extends Plugin {
 	 */
 	openSwitcherCommand(command: string): void {
 		const pluginID = command.split(":")[0];
-		//@ts-ignore
-		const plugins = this.app.plugins.plugins;
-		//@ts-ignore
-		const internalPlugins = this.app.internalPlugins.plugins;
-
-		if (plugins[pluginID] || internalPlugins[pluginID]?.enabled) {
-			//@ts-ignore
+		const communitySwitcher = this.app.plugins.enabledPlugins.has(pluginID);
+		const internalSwitcher = this.app.internalPlugins.getEnabledPluginById(pluginID as InternalPluginName);
+		if (communitySwitcher || internalSwitcher) {
 			this.app.commands.executeCommandById(command);
 		} else {
 			new Notice(

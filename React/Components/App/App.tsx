@@ -10,6 +10,7 @@ import { getBookmarks } from "React/Utils/getBookmarks";
 import { BeautitabPluginSettings } from "src/Settings/Settings";
 import getQuote from "React/Utils/getQuote";
 import { BackgroundTheme } from "src/Types/Enums";
+import { CachedBackground } from "../../../src/Types/Interfaces";
 
 /**
  * Given an icon name, converts a Obsidian icon to a usable SVG string and embeds it into a span.
@@ -44,24 +45,42 @@ const App = ({
 	const [settings, setSettings] = useState<BeautitabPluginSettings>(
 		settingsObservable.getValue()
 	);
+	const [bg, setBg] = useState<CachedBackground | null>(null);
 	const [time, setTime] = useState(getTime(settings.timeFormat));
 	const mainDivRef = useRef<HTMLDivElement>(null);
 
 	const obsidian = useObsidian();
-	const background = useMemo(
-		() =>
-			getBackground(
-				settings.backgroundTheme,
-				settings.customBackground,
-				settings.localBackgrounds
-			),
-		[
+	const background = useMemo(async () => {
+		return await getBackground(
 			settings.backgroundTheme,
 			settings.customBackground,
 			settings.localBackgrounds,
-		]
-	);
+			settings.apiKey,
+			settings.cachedBackground
+		);
+	}, [
+		settings.backgroundTheme,
+		settings.customBackground,
+		settings.localBackgrounds,
+		settings.apiKey,
+		settings.cachedBackground,
+	]);
+	const getResult = async () => {
+		setBg(settings.cachedBackground ?? null);
+		const bg = await background;
+		setBg(bg);
+	};
+	useEffect(() => {
+		getResult();
+	}, [background]);
 
+	if (
+		(bg && bg.date !== settings.cachedBackground?.date) ||
+		(bg && bg.theme !== settings.cachedBackground?.theme)
+	) {
+		plugin.settings.cachedBackground = bg;
+		plugin.saveSettings();
+	}
 	const allVaultFiles = obsidian?.vault.getAllLoadedFiles();
 	const latestModifiedMarkdownFiles = useMemo(() => {
 		const files = allVaultFiles?.filter(
@@ -142,7 +161,7 @@ const App = ({
 			`}
 			// @ts-ignore
 			style={{
-				backgroundImage: `url("${background}")`,
+				backgroundImage: `url("${bg?.url}")`,
 			}}
 			onKeyDown={(e) => {
 				if (!e.ctrlKey && !e.altKey && /^[A-Za-z0-9]$/.test(e.key)) {
