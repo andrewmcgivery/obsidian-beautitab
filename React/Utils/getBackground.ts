@@ -158,12 +158,12 @@ const getBackground = async (
 	apiKey: string,
 	cachedBackground?: CachedBackground
 ): Promise<CachedBackground | null> => {
-	
+
 	switch (backgroundTheme) {
 		case BackgroundTheme.SEASONS_AND_HOLIDAYS:
 			if (
 				cachedBackground && cachedBackground.url.length > 0 && cachedBackground.theme === backgroundTheme &&
-				isWithinHoursAfter(new Date(cachedBackground.date), 1, new Date())
+				!isWithinHoursAfter(new Date(cachedBackground.date), 1, new Date())
 			)
 				return cachedBackground;
 			const seasonalTag = getSeasonalTag(new Date());
@@ -182,9 +182,9 @@ const getBackground = async (
 
 			if (seasonHolidays) {
 				if (seasonHolidays instanceof Array) {
-					return { url: seasonHolidays[0].urls.raw, date: new Date(), theme: backgroundTheme};
+					return { url: seasonHolidays[0].urls.raw, date: new Date(), theme: backgroundTheme };
 				}
-				return { url: seasonHolidays.urls.raw, date: new Date(), theme: backgroundTheme};
+				return { url: seasonHolidays.urls.raw, date: new Date(), theme: backgroundTheme };
 			}
 			return null;
 		case BackgroundTheme.CUSTOM:
@@ -202,7 +202,7 @@ const getBackground = async (
 			if (
 				cachedBackground && cachedBackground.url.length > 0 &&
 				backgroundTheme === cachedBackground.theme &&
-				isWithinHoursAfter(new Date(cachedBackground.date), 1, new Date())
+				!isWithinHoursAfter(new Date(cachedBackground.date), 1, new Date())
 			) return cachedBackground;
 
 			if (apiKey.length === 0) return null;
@@ -220,7 +220,7 @@ const getBackground = async (
 				if (defRandom instanceof Array) {
 					return { url: defRandom[0].urls.raw, date: new Date(), theme: backgroundTheme };
 				}
-				return { url: defRandom.urls.raw, date: new Date(), theme: backgroundTheme};
+				return { url: defRandom.urls.raw, date: new Date(), theme: backgroundTheme };
 			}
 			return null;
 	}
