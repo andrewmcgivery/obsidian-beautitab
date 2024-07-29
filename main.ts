@@ -114,7 +114,7 @@ export default class BeautitabPlugin extends Plugin {
 	}
 
 	/**
-	 * Hijack new tabs and show Beauitab
+	 * Hijack new tabs and show Beautitab
 	 */
 	private onLayoutChange(): void {
 		const leaf = this.app.workspace.getMostRecentLeaf();
