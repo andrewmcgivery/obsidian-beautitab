@@ -155,7 +155,7 @@ const getBackground = (
 	switch (backgroundTheme) {
 		case BackgroundTheme.SEASONS_AND_HOLIDAYS:
 			const seasonalTag = getSeasonalTag(new Date());
-			return `https://source.unsplash.com/random?${seasonalTag}&cachetag=${new Date()
+			return `https://picsum.photos/seed/${encodeURIComponent(seasonalTag)}-${new Date()
 				.toDateString()
 				.replace(/ /g, "")}`;
 		case BackgroundTheme.CUSTOM:
@@ -168,7 +168,7 @@ const getBackground = (
 		case BackgroundTheme.TRANSPARENT:
 			return null;
 		default:
-			return `https://source.unsplash.com/random?${backgroundTheme}&cachetag=${new Date()
+			return `https://picsum.photos/seed/${encodeURIComponent(backgroundTheme)}-${new Date()
 				.toDateString()
 				.replace(/ /g, "")}`;
 	}
